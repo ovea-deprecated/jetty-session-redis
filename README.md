@@ -1,12 +1,12 @@
 # Jetty session clustering with REDIS
 
-REDIS: http://redis.io/
+REDIS (http://redis.io/)
 
 ## Build instruction:
 
- git clone git://github.com/Ovea/jetty-session-redis.git
- jetty-session-redis
- mvn package
+  git clone git://github.com/Ovea/jetty-session-redis.git
+  jetty-session-redis
+  mvn package
 
 ## Installation
 
