@@ -3,12 +3,35 @@ package com.ovea.jetty.session;
 import org.eclipse.jetty.server.session.AbstractSessionManager;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 public abstract class SessionManagerSkeleton extends AbstractSessionManager {
+
+    private final ConcurrentMap<String, JettySession> sessions = new ConcurrentHashMap<String, JettySession>();
+
+    @Override
+    protected void addSession(AbstractSessionManager.Session session) {
+        if (isRunning()) {
+            JettySession jettySession = ((JettySession) session);
+            String clusterId = jettySession.getClusterId();
+            sessions.put(clusterId, jettySession);
+            jettySession.willPassivate();
+            storeSession(jettySession);
+            jettySession.didActivate();
+        }
+    }
+
+    @Override
+    protected AbstractSessionManager.Session newSession(HttpServletRequest request) {
+        return new JettySession(request);
+    }
+
     @Override
     @Deprecated
     public Map getSessionMap() {
@@ -29,8 +52,14 @@ public abstract class SessionManagerSkeleton extends AbstractSessionManager {
         //TODO
     }
 
-    public class Session extends AbstractSessionManager.Session {
-        Session(HttpServletRequest request) {
+    public void expire(List<String> expired) {
+        //TODO
+    }
+
+    protected abstract void storeSession(JettySession jettySession);
+
+    public class JettySession extends AbstractSessionManager.Session {
+        JettySession(HttpServletRequest request) {
             super(request);
         }
 
@@ -42,6 +71,16 @@ public abstract class SessionManagerSkeleton extends AbstractSessionManager {
         @Override
         public String getClusterId() {
             return super.getClusterId();
+        }
+
+        @Override
+        public void willPassivate() {
+            super.willPassivate();
+        }
+
+        @Override
+        public void didActivate() {
+            super.didActivate();
         }
     }
 }
