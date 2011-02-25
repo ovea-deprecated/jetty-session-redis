@@ -1,6 +1,6 @@
 # Jetty session clustering with REDIS
 
-[REDIS website] (http://redis.io/)
+[REDIS website](http://redis.io/)
 
 ## Build instruction:
 
