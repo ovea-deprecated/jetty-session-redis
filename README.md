@@ -1,7 +1,8 @@
 # Jetty session clustering with REDIS
 
-* [REDIS website](http://redis.io/)
-* [Jetty website](http://www.eclipse.org/jetty/)
+* [REDIS website](http://redis.io/) (tested on version 2.2.1)
+* [JEDIS website](https://github.com/xetorthio/jedis) (tested on version 1.5.2)
+* [Jetty website](http://www.eclipse.org/jetty/) (tested on version 8.0.0.M2)
 
 ## Build instruction:
 
@@ -11,7 +12,11 @@
 
 ## Installation
 
-Put the JAR file in Jetty extension folder
+Put the jar files on the server lib/ext folder:
+
+* jedis
+* commons-pool
+* jetty-session-redis
 
 ## Configuration
 
