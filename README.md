@@ -3,7 +3,7 @@
 * [REDIS website](http://redis.io/)
 * [Jetty website](http://www.eclipse.org/jetty/)
 
- ## Build instruction:
+## Build instruction:
 
     git clone git://github.com/Ovea/jetty-session-redis.git
     jetty-session-redis
