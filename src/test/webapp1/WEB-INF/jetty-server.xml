@@ -2,38 +2,6 @@
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
 
-    <Call id="MBeanServer" class="java.lang.management.ManagementFactory" name="getPlatformMBeanServer"/>
-
-    <New id="MBeanContainer" class="org.eclipse.jetty.jmx.MBeanContainer">
-        <Arg>
-            <Ref id="MBeanServer"/>
-        </Arg>
-    </New>
-
-    <Get id="Container" name="container">
-        <Call name="addEventListener">
-            <Arg>
-                <Ref id="MBeanContainer"/>
-            </Arg>
-        </Call>
-    </Get>
-
-    <Call name="addBean">
-        <Arg>
-            <Ref id="MBeanContainer"/>
-        </Arg>
-    </Call>
-
-    <Get id="Logger" class="org.eclipse.jetty.util.log.Log" name="log"/>
-
-    <Ref id="MBeanContainer">
-        <Call name="addBean">
-            <Arg>
-                <Ref id="Logger"/>
-            </Arg>
-        </Call>
-    </Ref>
-
     <Set name="stopAtShutdown">true</Set>
     <Set name="sendServerVersion">true</Set>
     <Set name="sendDateHeader">true</Set>
@@ -53,7 +21,7 @@
                     <Property name="jetty.host"/>
                 </Set>
                 <Set name="port">
-                    <Property name="jetty.port" default="80"/>
+                    <Property name="jetty.port" default="8081"/>
                 </Set>
             </New>
         </Arg>
@@ -74,30 +42,33 @@
         </New>
     </Set>
 
+    <!--
+        Configure session id management
+    -->
     <Set name="sessionIdManager">
         <New class="com.ovea.jetty.session.redis.RedisSessionIdManager">
             <Arg>
                 <Ref id="Server"/>
             </Arg>
-            <Set name="workerName">fred</Set>
-            <Call name="setDriverInfo">
-                <Arg>com.mysql.jdbc.Driver</Arg>
-                <Arg>jdbc:mysql://127.0.0.1:3306/sessions?user=janb</Arg>
-            </Call>
-            <Set name="scavengeInterval">60</Set>
+            <Arg>session/redis</Arg>
+            <Set name="scavengerInterval">20000</Set>
+            <Set name="workerName">
+                <SystemProperty name="jetty.node" default="node1"/>
+            </Set>
         </New>
     </Set>
 
-
-    <!-- TODO: change for session clustering -->
-    <!--<New class="org.eclipse.jetty.plus.jndi.Resource">
-        <Arg>redis/jaxspot</Arg>
+    <!--
+        Provides a Redis Pool for session management on server and each webapp
+    -->
+    <New class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>session/redis</Arg>
         <Arg>
             <New class="redis.clients.jedis.JedisPool">
                 <Arg>
                     <New class="org.apache.commons.pool.impl.GenericObjectPool$Config">
-                        <Set type="int" name="minIdle">4</Set>
-                        <Set type="int" name="maxActive">10</Set>
+                        <Set type="int" name="minIdle">5</Set>
+                        <Set type="int" name="maxActive">15</Set>
                         <Set type="boolean" name="testOnBorrow">true</Set>
                     </New>
                 </Arg>
@@ -105,6 +76,6 @@
                 <Arg type="int">6379</Arg>
             </New>
         </Arg>
-    </New>-->
+    </New>
 
 </Configure>

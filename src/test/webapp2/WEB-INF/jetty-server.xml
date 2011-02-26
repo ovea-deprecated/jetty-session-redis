@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+    <Set name="stopAtShutdown">true</Set>
+    <Set name="sendServerVersion">true</Set>
+    <Set name="sendDateHeader">true</Set>
+    <Set name="gracefulShutdown">1000</Set>
+
+    <Set name="ThreadPool">
+        <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+            <Set name="minThreads">10</Set>
+            <Set name="maxThreads">200</Set>
+        </New>
+    </Set>
+
+    <Call name="addConnector">
+        <Arg>
+            <New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                <Set name="host">
+                    <Property name="jetty.host"/>
+                </Set>
+                <Set name="port">
+                    <Property name="jetty.port" default="8082"/>
+                </Set>
+            </New>
+        </Arg>
+    </Call>
+
+    <Set name="handler">
+        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+                <Array type="org.eclipse.jetty.server.Handler">
+                    <Item>
+                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+                    </Item>
+                    <Item>
+                        <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+                    </Item>
+                </Array>
+            </Set>
+        </New>
+    </Set>
+
+    <!--
+        Configure session id management
+    -->
+    <Set name="sessionIdManager">
+        <New class="com.ovea.jetty.session.redis.RedisSessionIdManager">
+            <Arg>
+                <Ref id="Server"/>
+            </Arg>
+            <Arg>session/redis</Arg>
+            <Set name="scavengerInterval">20000</Set>
+            <Set name="workerName">
+                <SystemProperty name="jetty.node" default="node2"/>
+            </Set>
+        </New>
+    </Set>
+
+    <!--
+        Provides a Redis Pool for session management on server and each webapp
+    -->
+    <New class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>session/redis</Arg>
+        <Arg>
+            <New class="redis.clients.jedis.JedisPool">
+                <Arg>
+                    <New class="org.apache.commons.pool.impl.GenericObjectPool$Config">
+                        <Set type="int" name="minIdle">5</Set>
+                        <Set type="int" name="maxActive">15</Set>
+                        <Set type="boolean" name="testOnBorrow">true</Set>
+                    </New>
+                </Arg>
+                <Arg>127.0.0.1</Arg>
+                <Arg type="int">6379</Arg>
+            </New>
+        </Arg>
+    </New>
+
+</Configure>

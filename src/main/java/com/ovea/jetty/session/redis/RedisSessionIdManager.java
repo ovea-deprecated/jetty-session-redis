@@ -36,7 +36,8 @@ public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
                 if (delegate == null) {
                     try {
                         InitialContext ic = new InitialContext();
-                        delegate = (JedisExecutor) ic.lookup(jndiName);
+                        JedisPool jedisPool = (JedisPool) ic.lookup(jndiName);
+                        delegate = new PooledJedisExecutor(jedisPool);
                     } catch (Exception e) {
                         throw new IllegalStateException("Unable to find instance of " + JedisExecutor.class.getName() + " in JNDI location " + jndiName + " : " + e.getMessage(), e);
                     }

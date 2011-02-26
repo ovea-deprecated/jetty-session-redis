@@ -19,7 +19,7 @@ public abstract class SessionManagerSkeleton extends AbstractSessionManager {
     protected void addSession(AbstractSessionManager.Session session) {
         if (isRunning()) {
             JettySession jettySession = ((JettySession) session);
-            String clusterId = jettySession.getClusterId();
+            String clusterId = getClusterId(session);
             sessions.put(clusterId, jettySession);
             jettySession.willPassivate();
             storeSession(jettySession);
@@ -66,11 +66,6 @@ public abstract class SessionManagerSkeleton extends AbstractSessionManager {
         @Override
         public boolean isValid() {
             return super.isValid();
-        }
-
-        @Override
-        public String getClusterId() {
-            return super.getClusterId();
         }
 
         @Override

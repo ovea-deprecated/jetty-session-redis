@@ -1,8 +1,9 @@
 # Jetty session clustering with REDIS
 
-[REDIS website](http://redis.io/)
+* [REDIS website](http://redis.io/)
+* [Jetty website](http://www.eclipse.org/jetty/)
 
-## Build instruction:
+ ## Build instruction:
 
     git clone git://github.com/Ovea/jetty-session-redis.git
     jetty-session-redis
@@ -16,22 +17,47 @@ Put the JAR file in Jetty extension folder
 
 In Jetty server configuration file (i.e. jetty.xml):
 
-    <New class="org.eclipse.jetty.plus.jndi.Resource">
-        <Arg>redis/jaxspot</Arg>
-        <Arg>
-            <New class="redis.clients.jedis.JedisPool">
+    <?xml version="1.0"?>
+    <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+    <Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+        <!--
+            Configure session id management
+        -->
+        <Set name="sessionIdManager">
+            <New class="com.ovea.jetty.session.redis.RedisSessionIdManager">
                 <Arg>
-                    <New class="org.apache.commons.pool.impl.GenericObjectPool$Config">
-                        <Set type="int" name="minIdle">4</Set>
-                        <Set type="int" name="maxActive">10</Set>
-                        <Set type="boolean" name="testOnBorrow">true</Set>
-                    </New>
+                    <Ref id="Server"/>
                 </Arg>
-                <Arg>127.0.0.1</Arg>
-                <Arg type="int">6379</Arg>
+                <Arg>session/redis</Arg>
+                <Set name="scavengerInterval">60000</Set>
+                <Set name="workerName">
+                    <SystemProperty name="jetty.node" default="node1"/>
+                </Set>
             </New>
-        </Arg>
-    </New>
+        </Set>
+
+        <!--
+            Provides a Redis Pool for session management on server and each webapp
+        -->
+        <New class="org.eclipse.jetty.plus.jndi.Resource">
+            <Arg>session/redis</Arg>
+            <Arg>
+                <New class="redis.clients.jedis.JedisPool">
+                    <Arg>
+                        <New class="org.apache.commons.pool.impl.GenericObjectPool$Config">
+                            <Set type="int" name="minIdle">5</Set>
+                            <Set type="int" name="maxActive">15</Set>
+                            <Set type="boolean" name="testOnBorrow">true</Set>
+                        </New>
+                    </Arg>
+                    <Arg>127.0.0.1</Arg>
+                    <Arg type="int">6379</Arg>
+                </New>
+            </Arg>
+        </New>
+
+    </Configure>
 
 In each web application context file using session clustering (i.e. in WEB-INF/jetty-env.xml):
 

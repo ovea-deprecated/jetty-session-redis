@@ -21,6 +21,8 @@ public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager 
 
     // for a session id in the whole jetty, each webapp can have different sessions for the same id
     private final ConcurrentMap<String, Object> sessions = new ConcurrentHashMap<String, Object>();
+    private final static String __NEW_SESSION_ID = "org.eclipse.jetty.server.newSessionId";
+
     private final Server server;
 
     private long scavengerInterval = 60 * 1000; // 1min
@@ -116,14 +118,14 @@ public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager 
 
     @Override
     public final void addSession(HttpSession session) {
-        String clusterId = ((SessionManagerSkeleton.JettySession) session).getClusterId();
+        String clusterId = getClusterId(session.getId());
         storeClusterId(clusterId);
         sessions.putIfAbsent(clusterId, Void.class);
     }
 
     @Override
     public final void removeSession(HttpSession session) {
-        String clusterId = ((SessionManagerSkeleton.JettySession) session).getClusterId();
+        String clusterId = getClusterId(session.getId());
         if (sessions.containsKey(clusterId)) {
             sessions.remove(clusterId);
             deleteClusterId(clusterId);
