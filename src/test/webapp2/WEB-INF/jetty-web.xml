@@ -23,4 +23,22 @@
 
     <Set name="contextPath">/webapp2</Set>
 
+    <Get name="server">
+        <Get id="RedisSessionIdManager" name="sessionIdManager"/>
+    </Get>
+    <Set name="sessionHandler">
+        <New class="org.eclipse.jetty.server.session.SessionHandler">
+            <Arg>
+                <New class="com.ovea.jetty.session.redis.RedisSessionManager">
+                    <Arg>session/redis</Arg>
+                    <!-- set the interval to force session persistence event if it didn't changed -->
+                    <Set name="saveInterval">30</Set>
+                    <Set name="idManager">
+                        <Ref id="RedisSessionIdManager"/>
+                    </Set>
+                </New>
+            </Arg>
+        </New>
+    </Set>
+
 </Configure>

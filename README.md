@@ -35,7 +35,9 @@ In Jetty server configuration file (i.e. jetty.xml):
                     <Ref id="Server"/>
                 </Arg>
                 <Arg>session/redis</Arg>
+                <!-- time interval to check for expired sessions in redis cache, in milliseconds. Defaults to 1min -->
                 <Set name="scavengerInterval">60000</Set>
+                <!-- cluster node name -->
                 <Set name="workerName">
                     <SystemProperty name="jetty.node" default="node1"/>
                 </Set>
@@ -66,3 +68,48 @@ In Jetty server configuration file (i.e. jetty.xml):
 
 In each web application context file using session clustering (i.e. in WEB-INF/jetty-env.xml):
 
+    <Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    
+        <Get name="server">
+            <Get id="RedisSessionIdManager" name="sessionIdManager"/>
+        </Get>
+        <Set name="sessionHandler">
+            <New class="org.eclipse.jetty.server.session.SessionHandler">
+                <Arg>
+                    <New class="com.ovea.jetty.session.redis.RedisSessionManager">
+                        <Arg>session/redis</Arg>
+                        <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
+                        <Set name="saveInterval">60</Set>
+                        <Set name="idManager">
+                            <Ref id="RedisSessionIdManager"/>
+                        </Set>
+                    </New>
+                </Arg>
+            </New>
+        </Set>
+
+    </Configure>
+
+
+## Controlling session serialization
+
+By default, session attributes are serialized in JSON. You can change this behavior and use one of the provided Serializer:
+* com.ovea.jetty.session.serializer.JsonSerializer
+* com.ovea.jetty.session.serializer.JdkSerializer
+* com.ovea.jetty.session.serializer.XStreamSerializer
+
+    <Set name="sessionHandler">
+        <New class="org.eclipse.jetty.server.session.SessionHandler">
+            <Arg>
+                <New class="com.ovea.jetty.session.redis.RedisSessionManager">
+                    <Arg>session/redis</Arg>
+                    <Arg>
+                        <New class="com.ovea.jetty.session.serializer.XStreamSerializer"/>
+                    </Arg>
+                    <Set name="idManager">
+                        <Ref id="RedisSessionIdManager"/>
+                    </Set>
+                </New>
+            </Arg>
+        </New>
+    </Set>

@@ -37,6 +37,25 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- serialization in json -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.7.3</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- serialization in xstream -->
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.3.1</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- serialization with jboss -->
+
+        <!-- testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -80,6 +99,38 @@
                             <shadedClassifierName>all</shadedClassifierName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createSourcesJar>true</createSourcesJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>redis.clients:jedis</include>
+                                    <include>commons-pool:commons-pool</include>
+                                    <include>org.codehaus.jackson:jackson-core-asl</include>
+                                    <include>org.codehaus.jackson:jackson-mapper-asl</include>
+                                    <include>com.thoughtworks.xstream:xstream</include>
+                                    <include>xpp3:xpp3_min</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>redis.clients</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.jedis</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.pool</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.pool</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.codehaus.jackson</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.jackson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.thoughtworks.xstream</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.xstream</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.xmlpull</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.xpp3</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

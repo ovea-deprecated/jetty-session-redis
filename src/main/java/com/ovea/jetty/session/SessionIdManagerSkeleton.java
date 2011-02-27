@@ -36,7 +36,6 @@ public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager 
 
     // for a session id in the whole jetty, each webapp can have different sessions for the same id
     private final ConcurrentMap<String, Object> sessions = new ConcurrentHashMap<String, Object>();
-    private final static String __NEW_SESSION_ID = "org.eclipse.jetty.server.newSessionId";
 
     private final Server server;
 
