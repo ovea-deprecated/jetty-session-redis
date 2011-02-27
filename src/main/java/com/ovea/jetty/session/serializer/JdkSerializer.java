@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ovea.jetty.session.redis;
+package com.ovea.jetty.session.serializer;
 
-public interface Serializer {
-    String serialize(Object o);
+import com.ovea.jetty.session.SerializerSkeleton;
 
-    Object deserialize(String o);
+/**
+ * @author Mathieu Carbou (mathieu.carbou@gmail.com)
+ */
+public final class JdkSerializer extends SerializerSkeleton {
+    @Override
+    public String serialize(Object o) {
+        return null;
+    }
+
+    @Override
+    public <T> T deserialize(String o, Class<T> targetType) {
+        return null;
+    }
 }

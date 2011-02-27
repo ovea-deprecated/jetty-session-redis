@@ -12,13 +12,16 @@
 
 ## Installation
 
-Put the jar files on the server lib/ext folder:
+You can simply put the BUNDLE "*-all.jar" (i.e.jetty-session-redis-1.0-SNAPSHOT-all.jar) in the Jetty lib/ext foder. This bundle contains all the required dependencies, repackadged internally to not interfer with potential other versions on the classpath.
+
+If you want to upgrade a dependency (i.e. Jedis), you may want to use instead the JAR version (jetty-session-redis-1.0-SNAPSHOT.jar), and you'll have to put also in Jetty lib/ext foder all the required dependencies:
 
 * jedis
 * commons-pool
-* jetty-session-redis
+* xstream (optional)
+* jackson mapper (optional)
 
-## Configuration
+ ## Configuration
 
 In Jetty server configuration file (i.e. jetty.xml):
 
@@ -94,6 +97,7 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
 ## Controlling session serialization
 
 By default, session attributes are serialized in JSON. You can change this behavior and use one of the provided Serializer:
+
 * com.ovea.jetty.session.serializer.JsonSerializer
 * com.ovea.jetty.session.serializer.JdkSerializer
 * com.ovea.jetty.session.serializer.XStreamSerializer

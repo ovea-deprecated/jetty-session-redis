@@ -181,7 +181,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         });
     }
 
-    final class RedisSession extends SessionSkeleton {
+    final class RedisSession extends SessionManagerSkeleton.SessionSkeleton {
 
         private static final long serialVersionUID = -1232252425814928262L;
 
