@@ -15,24 +15,22 @@
  */
 package com.ovea.jetty.session.serializer;
 
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import com.ovea.jetty.session.Serializer;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public final class JdkSerializer extends BinarySerializer {
+public abstract class SerializerSkeleton implements Serializer {
     @Override
-    protected void write(OutputStream out, Object o) throws Exception {
-        ObjectOutputStream oos = new ObjectOutputStream(out);
-        oos.writeObject(o);
+    public void start() {
     }
 
     @Override
-    protected Object read(InputStream is) throws Exception {
-        ObjectInputStream ois = new ObjectInputStream(is);
-        return ois.readObject();
+    public void stop() {
+    }
+
+    @Override
+    public String serialize(Object o) {
+        return o == null ? null : String.valueOf(o);
     }
 }

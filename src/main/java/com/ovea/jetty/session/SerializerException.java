@@ -16,19 +16,20 @@
 package com.ovea.jetty.session;
 
 /**
- * @author Mathieu Carbou (mathieu.carbou@gmail.com)
+ * @author Mathieu Carbou
  */
-public abstract class SerializerSkeleton implements Serializer {
-    @Override
-    public void start() {
+public final class SerializerException extends RuntimeException {
+    private static final long serialVersionUID = 1669218829475607626L;
+
+    public SerializerException(Throwable cause) {
+        super(cause.getMessage(), cause);
     }
 
-    @Override
-    public void stop() {
+    public SerializerException(String message) {
+        super(message);
     }
 
-    @Override
-    public String serialize(Object o) {
-        return o == null ? null : String.valueOf(o);
+    public SerializerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

@@ -21,7 +21,7 @@ public interface Serializer {
 
     void stop();
 
-    String serialize(Object o);
+    String serialize(Object o) throws SerializerException;
 
-    <T> T deserialize(String o, Class<T> targetType);
+    <T> T deserialize(String o, Class<T> targetType) throws SerializerException;
 }
