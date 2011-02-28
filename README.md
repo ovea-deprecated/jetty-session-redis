@@ -38,8 +38,8 @@ In Jetty server configuration file (i.e. jetty.xml):
                     <Ref id="Server"/>
                 </Arg>
                 <Arg>session/redis</Arg>
-                <!-- time interval to check for expired sessions in redis cache, in milliseconds. Defaults to 1min -->
-                <Set name="scavengerInterval">60000</Set>
+                <!-- time interval to check for expired sessions in redis cache, in milliseconds. Defaults to 1 min -->
+                <Set name="scavengerInterval">30000</Set>
                 <!-- cluster node name -->
                 <Set name="workerName">
                     <SystemProperty name="jetty.node" default="node1"/>
@@ -71,8 +71,10 @@ In Jetty server configuration file (i.e. jetty.xml):
 
 In each web application context file using session clustering (i.e. in WEB-INF/jetty-env.xml):
 
-    <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-    
+    <Configure id="webappContext" class="org.eclipse.jetty.webapp.WebAppContext">
+
+        <Set name="contextPath">/webapp1</Set>
+
         <Get name="server">
             <Get id="RedisSessionIdManager" name="sessionIdManager"/>
         </Get>
@@ -81,11 +83,22 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
                 <Arg>
                     <New class="com.ovea.jetty.session.redis.RedisSessionManager">
                         <Arg>session/redis</Arg>
-                        <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
-                        <Set name="saveInterval">60</Set>
+                        <Arg>
+                            <New class="com.ovea.jetty.session.serializer.JsonSerializer"/>
+                        </Arg>
                         <Set name="idManager">
                             <Ref id="RedisSessionIdManager"/>
                         </Set>
+                        <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
+                        <Set name="saveInterval">20</Set>
+                        <!-- set the cookie domain -->
+                        <Set name="sessionDomain">127.0.0.1</Set>
+                        <!-- set the cookie path -->
+                        <Set name="sessionPath">/</Set>
+                        <!-- set the cookie max age in seconds. Default is -1 (no max age). 1 day = 86400 seconds -->
+                        <Set name="cookieMaxAge">86400</Set>
+                        <!-- set the interval in seconds to refresh the cookie max age. Default to 0. This number should be lower than the session expirity time. -->
+                        <Set name="refreshCookieAge">300</Set>
                     </New>
                 </Arg>
             </New>
@@ -93,6 +106,7 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
 
     </Configure>
 
+Note: Jetty's default for cookieMaxAge is -1 and as per my tests, setting it to a too short value may cause issues in session retrieval.
 
 ## Controlling session serialization
 

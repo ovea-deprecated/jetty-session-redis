@@ -154,6 +154,14 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
         }
     }
 
+    public final void setSessionPath(String path) {
+        getSessionCookieConfig().setPath(path);
+    }
+
+    public final void setCookieMaxAge(int seconds) {
+        getSessionCookieConfig().setMaxAge(seconds);
+    }
+
     protected final String getVirtualHost() {
         String vhost = "0.0.0.0";
         if (_context == null)

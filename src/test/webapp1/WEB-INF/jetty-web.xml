@@ -34,12 +34,19 @@
                     <Arg>
                         <New class="com.ovea.jetty.session.serializer.JsonSerializer"/>
                     </Arg>
-                    <!-- set the interval to force session persistence event if it didn't changed -->
-                    <Set name="saveInterval">20</Set>
-                    <Set name="sessionDomain">127.0.0.1</Set>
                     <Set name="idManager">
                         <Ref id="RedisSessionIdManager"/>
                     </Set>
+                    <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
+                    <Set name="saveInterval">20</Set>
+                    <!-- set the cookie domain -->
+                    <Set name="sessionDomain">127.0.0.1</Set>
+                    <!-- set the cookie path -->
+                    <Set name="sessionPath">/</Set>
+                    <!-- set the cookie max age in seconds. Default is -1 (no max age). 1 day = 86400 seconds -->
+                    <Set name="cookieMaxAge">80</Set>
+                    <!-- set the interval in seconds to refresh the cookie max age. Default to 0. -->
+                    <Set name="refreshCookieAge">20</Set>
                 </New>
             </Arg>
         </New>
