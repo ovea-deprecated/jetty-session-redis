@@ -141,5 +141,5 @@ Here is the list of provided Serializer:
 
 Mathieu Carbou
 mathieu.carbou@gmail.com
-http://blog.mycila.com/
-http://www.mycila.com/
+(http://blog.mycila.com/)
+(http://www.mycila.com/)
