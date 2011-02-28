@@ -27,7 +27,7 @@ public final class ClusteringTest {
 
     @Test
     public void test() throws Exception {
-        Thread.sleep(10000);
+        //TODO
     }
 
     @BeforeClass
