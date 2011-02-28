@@ -133,7 +133,6 @@
                                     <include>com.thoughtworks.xstream:xstream</include>
                                     <include>xpp3:xpp3_min</include>
                                     <!-- jboss -->
-                                    <include>jboss:jboss-serialization</include>
                                     <include>trove:trove</include>
                                 </includes>
                             </artifactSet>
@@ -162,10 +161,6 @@
                                     <shadedPattern>com.ovea.jetty.session.internal.xpp3</shadedPattern>
                                 </relocation>
                                 <!-- jboss -->
-                                <relocation>
-                                    <pattern>org.jboss.serial</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.jboss</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>gnu.trove</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.trove</shadedPattern>

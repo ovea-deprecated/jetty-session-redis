@@ -17,7 +17,7 @@ package com.ovea.jetty.session.redis;
 
 import com.ovea.jetty.session.Serializer;
 import com.ovea.jetty.session.SessionManagerSkeleton;
-import com.ovea.jetty.session.serializer.JsonSerializer;
+import com.ovea.jetty.session.serializer.XStreamSerializer;
 import org.eclipse.jetty.util.log.Log;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -46,11 +46,11 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
     private long saveIntervalSec = 60; //only persist changes to session access times every 60 secs
 
     public RedisSessionManager(JedisPool jedisPool) {
-        this(jedisPool, new JsonSerializer());
+        this(jedisPool, new XStreamSerializer());
     }
 
     public RedisSessionManager(String jndiName) {
-        this(jndiName, new JsonSerializer());
+        this(jndiName, new XStreamSerializer());
     }
 
     public RedisSessionManager(JedisPool jedisPool, Serializer serializer) {

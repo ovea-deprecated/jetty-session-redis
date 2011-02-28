@@ -15,8 +15,8 @@
  */
 package com.ovea.jetty.session.serializer;
 
-import org.jboss.serial.io.JBossObjectInputStream;
-import org.jboss.serial.io.JBossObjectOutputStream;
+import com.ovea.jetty.session.serializer.jboss.serial.io.JBossObjectInputStream;
+import com.ovea.jetty.session.serializer.jboss.serial.io.JBossObjectOutputStream;
 
 import java.io.InputStream;
 import java.io.OutputStream;

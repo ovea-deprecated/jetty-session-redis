@@ -96,7 +96,11 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
 
 ## Controlling session serialization
 
-By default, session attributes are serialized in JSON using Jackson. This serialization type is fast and reliable as long as you have really simple types in your session. You can change this behavior and use one of the provided Serializer:
+By default, session attributes are serialized using XStream, but this is clearly the worst serializer and you must make sure that you configure the serializer according to your needs.
+If you have small sessions with simple types, consider the <strong>JsonSerializer</strong>. If you have complexe objects but all serializable, you can consider the <strong>JbossSerializer</strong>.
+You can also create your own ones (<a href="https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer">see examples here</a>).
+
+Here is the list of provided Serializer:
 
 * com.ovea.jetty.session.serializer.JsonSerializer
 * com.ovea.jetty.session.serializer.JdkSerializer
@@ -118,5 +122,3 @@ By default, session attributes are serialized in JSON using Jackson. This serial
             </Arg>
         </New>
     </Set>
-
-You can also create your own ones (<a href="https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer">see examples here</a>).
