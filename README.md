@@ -136,3 +136,10 @@ Here is the list of provided Serializer:
             </Arg>
         </New>
     </Set>
+
+## Authors and help
+
+Mathieu Carbou
+mathieu.carbou@gmail.com
+http://blog.mycila.com/
+http://www.mycila.com/
