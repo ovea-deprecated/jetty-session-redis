@@ -23,7 +23,7 @@ import java.io.InputStreamReader;
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-final class RedisProcess {
+public final class RedisProcess {
 
     ProcessReader reader;
 
