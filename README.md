@@ -84,9 +84,6 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
 
         <Set name="contextPath">/webapp1</Set>
 
-        <Get name="server">
-            <Get id="RedisSessionIdManager" name="sessionIdManager"/>
-        </Get>
         <Set name="sessionHandler">
             <New class="org.eclipse.jetty.server.session.SessionHandler">
                 <Arg>
@@ -105,7 +102,7 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
                         <!-- set the cookie path -->
                         <Set name="sessionPath">/</Set>
                         <!-- set the cookie max age in seconds. Default is -1 (no max age). 1 day = 86400 seconds -->
-                        <Set name="cookieMaxAge">86400</Set>
+                        <Set name="maxCookieAge">86400</Set>
                         <!-- set the interval in seconds to refresh the cookie max age. Default to 0. This number should be lower than the session expirity time. -->
                         <Set name="refreshCookieAge">300</Set>
                     </New>
@@ -115,7 +112,7 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
 
     </Configure>
 
-Note: Jetty's default for cookieMaxAge is -1 and as per my tests, setting it to a too short value may cause issues in session retrieval.
+Note: Jetty's default for maxCookieAge is -1 and as per my tests, setting it to a too short value may cause issues in session retrieval.
 
 ## Controlling session serialization
 

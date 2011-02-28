@@ -158,7 +158,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
         getSessionCookieConfig().setPath(path);
     }
 
-    public final void setCookieMaxAge(int seconds) {
+    public final void setMaxCookieAge(int seconds) {
         getSessionCookieConfig().setMaxAge(seconds);
     }
 
