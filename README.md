@@ -101,8 +101,9 @@ By default, session attributes are serialized in JSON using Jackson. This serial
 * com.ovea.jetty.session.serializer.JsonSerializer
 * com.ovea.jetty.session.serializer.JdkSerializer
 * com.ovea.jetty.session.serializer.XStreamSerializer
+* com.ovea.jetty.session.serializer.JbossSerializer
 
-    <Set name="sessionHandler">
+     <Set name="sessionHandler">
         <New class="org.eclipse.jetty.server.session.SessionHandler">
             <Arg>
                 <New class="com.ovea.jetty.session.redis.RedisSessionManager">

@@ -54,6 +54,12 @@
         </dependency>
 
         <!-- serialization with jboss -->
+        <dependency>
+            <groupId>trove</groupId>
+            <artifactId>trove</artifactId>
+            <version>2.1.1</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- testing -->
         <dependency>
@@ -87,6 +93,22 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>src/main/java/com/ovea/jetty/session/serializer/jboss/**</exclude>
+                        <exclude>src/test/resources/**</exclude>
+                        <exclude>**/*.ods</exclude>
+                        <exclude>**/.gitignore</exclude>
+                        <exclude>**/jndi.properties</exclude>
+                        <exclude>**/logging.properties</exclude>
+                        <exclude>**/*.js</exclude>
+                        <exclude>**/*.swf</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
@@ -101,15 +123,22 @@
                             <createSourcesJar>true</createSourcesJar>
                             <artifactSet>
                                 <includes>
+                                    <!-- redis -->
                                     <include>redis.clients:jedis</include>
                                     <include>commons-pool:commons-pool</include>
+                                    <!-- jackson -->
                                     <include>org.codehaus.jackson:jackson-core-asl</include>
                                     <include>org.codehaus.jackson:jackson-mapper-asl</include>
+                                    <!-- xstream -->
                                     <include>com.thoughtworks.xstream:xstream</include>
                                     <include>xpp3:xpp3_min</include>
+                                    <!-- jboss -->
+                                    <include>jboss:jboss-serialization</include>
+                                    <include>trove:trove</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
+                                <!-- redis -->
                                 <relocation>
                                     <pattern>redis.clients</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.jedis</shadedPattern>
@@ -118,10 +147,12 @@
                                     <pattern>org.apache.commons.pool</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.pool</shadedPattern>
                                 </relocation>
+                                <!-- jackson -->
                                 <relocation>
                                     <pattern>org.codehaus.jackson</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.jackson</shadedPattern>
                                 </relocation>
+                                <!-- xstream -->
                                 <relocation>
                                     <pattern>com.thoughtworks.xstream</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.xstream</shadedPattern>
@@ -129,6 +160,15 @@
                                 <relocation>
                                     <pattern>org.xmlpull</pattern>
                                     <shadedPattern>com.ovea.jetty.session.internal.xpp3</shadedPattern>
+                                </relocation>
+                                <!-- jboss -->
+                                <relocation>
+                                    <pattern>org.jboss.serial</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.jboss</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>gnu.trove</pattern>
+                                    <shadedPattern>com.ovea.jetty.session.internal.trove</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
