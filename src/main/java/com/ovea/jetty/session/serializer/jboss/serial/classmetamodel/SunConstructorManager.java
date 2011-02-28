@@ -33,22 +33,18 @@ import java.lang.reflect.Constructor;
  * This constructor manager requires sun package present.
  * If the class is not present, we will not be able to use this constructor manager
  * $Id: SunConstructorManager.java 315 2006-06-15 16:29:07Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public class SunConstructorManager extends ConstructorManager
-{
-    static boolean supported=true;
+public class SunConstructorManager extends ConstructorManager {
+    static boolean supported = true;
 
-    static
-    {
-        try
-        {
+    static {
+        try {
             reflectionFactory = ReflectionFactory.getReflectionFactory();
-        }
-        catch (Throwable e)
-        {
-        	e.printStackTrace();
-            supported=false;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            supported = false;
         }
     }
 
@@ -58,38 +54,27 @@ public class SunConstructorManager extends ConstructorManager
     /* (non-Javadoc)
     * @see org.jboss.serial.classmetamodel.ConstructorManager#getConstructor(java.lang.Class)
     */
-    public Constructor getConstructor(Class clazz) throws SecurityException, NoSuchMethodException
-    {
-    	if (clazz.isInterface())
-    	{
-    		throw new NoSuchMethodException("Can't create a constructor for a pure interface");
-    	}
-    	else
-        if (!Serializable.class.isAssignableFrom(clazz))
-        {
+    public Constructor getConstructor(Class clazz) throws SecurityException, NoSuchMethodException {
+        if (clazz.isInterface()) {
+            throw new NoSuchMethodException("Can't create a constructor for a pure interface");
+        } else if (!Serializable.class.isAssignableFrom(clazz)) {
             Constructor constr = clazz.getDeclaredConstructor(EMPTY_CLASS_ARRY);
             constr.setAccessible(true);
             return constr;
-        }
-        else
-        if (Externalizable.class.isAssignableFrom(clazz))
-        {
+        } else if (Externalizable.class.isAssignableFrom(clazz)) {
             Constructor constr = clazz.getConstructor(EMPTY_CLASS_ARRY);
             constr.setAccessible(true);
             return constr;
-        }
-        else
-        {
+        } else {
             Class currentClass = clazz;
-            while (Serializable.class.isAssignableFrom(currentClass))
-            {
+            while (Serializable.class.isAssignableFrom(currentClass)) {
                 currentClass = currentClass.getSuperclass();
             }
             Constructor constr = currentClass.getDeclaredConstructor(EMPTY_CLASS_ARRY);
             constr.setAccessible(true);
 
             // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6220682
-            Constructor newConstructor = reflectionFactory.newConstructorForSerialization(clazz,constr);
+            Constructor newConstructor = reflectionFactory.newConstructorForSerialization(clazz, constr);
             newConstructor.setAccessible(true);
 
             return newConstructor;
@@ -99,8 +84,7 @@ public class SunConstructorManager extends ConstructorManager
     /* (non-Javadoc)
      * @see org.jboss.serial.classmetamodel.ConstructorManager#isSupported()
      */
-    public boolean isSupported()
-    {
+    public boolean isSupported() {
         return supported;
     }
 

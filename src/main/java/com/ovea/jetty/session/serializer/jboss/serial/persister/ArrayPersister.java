@@ -35,10 +35,10 @@ import java.lang.reflect.Array;
 
 /**
  * $Id: ArrayPersister.java 231 2006-04-24 23:49:41Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public class ArrayPersister implements Persister
-{
+public class ArrayPersister implements Persister {
     byte id;
 
     public byte getId() {
@@ -52,61 +52,57 @@ public class ArrayPersister implements Persister
     /* (non-Javadoc)
     * @see org.jboss.serial.persister.Persister
     */
-    public void writeData(ClassMetaData metaData, ObjectOutput out, Object obj, ObjectSubstitutionInterface substitution) throws IOException
-    {
+    public void writeData(ClassMetaData metaData, ObjectOutput out, Object obj, ObjectSubstitutionInterface substitution) throws IOException {
         //ClassMetaData metaData = ClassMetamodelFactory.getClassMetaData(obj.getClass(),data.getCache().isCheckSerializableClass());
         //final int depth = metaData.getArrayDepth();
 
-        if (metaData.getArrayDepth()==1
-            && metaData.getClazz().isPrimitive())
-        {
+        if (metaData.getArrayDepth() == 1
+                && metaData.getClazz().isPrimitive()) {
             Class clazz = metaData.getClazz();
             if (clazz == Integer.TYPE) {
                 final int[] finalArray = (int[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeInt(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeInt(finalArray[i]);
             } else if (clazz == Byte.TYPE) {
                 final byte[] finalArray = (byte[]) obj;
                 out.writeInt(finalArray.length);
                 out.write(finalArray);
             } else if (clazz == Long.TYPE) {
-                final long[] finalArray= (long[]) obj;
+                final long[] finalArray = (long[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeLong(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeLong(finalArray[i]);
             } else if (clazz == Float.TYPE) {
                 float[] finalArray = (float[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeFloat(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeFloat(finalArray[i]);
             } else if (clazz == Double.TYPE) {
                 double[] finalArray = (double[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeDouble(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeDouble(finalArray[i]);
             } else if (clazz == Short.TYPE) {
                 short[] finalArray = (short[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeShort(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeShort(finalArray[i]);
             } else if (clazz == Character.TYPE) {
                 char[] finalArray = (char[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeChar(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeChar(finalArray[i]);
             } else if (clazz == Boolean.TYPE) {
                 boolean[] finalArray = (boolean[]) obj;
                 out.writeInt(finalArray.length);
-                for (int i=0;i<finalArray.length;i++) out.writeBoolean(finalArray[i]);
+                for (int i = 0; i < finalArray.length; i++) out.writeBoolean(finalArray[i]);
             } else {
                 throw new RuntimeException("Unexpected datatype " + clazz.getName());
             }
-        } else
-        {
+        } else {
             saveObjectArray(obj, out);
         }
     }
 
     private void saveObjectArray(Object obj, ObjectOutput out) throws IOException {
-        Object objs[] = (Object[])obj;
+        Object objs[] = (Object[]) obj;
         out.writeInt(objs.length);
-        for(int i=0;i<objs.length;i++)
-        {
+        for (int i = 0; i < objs.length; i++) {
             out.writeObject(objs[i]);
         }
     }
@@ -114,66 +110,60 @@ public class ArrayPersister implements Persister
     /* (non-Javadoc)
      * @see org.jboss.serial.persister.Persister
      */
-    public Object readData (ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException
-    {
-        try
-        {
+    public Object readData(ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException {
+        try {
             final int length = input.readInt();
 
-            if (metaData.getArrayDepth()==1
-                && metaData.getClazz().isPrimitive())
-            {
+            if (metaData.getArrayDepth() == 1
+                    && metaData.getClazz().isPrimitive()) {
                 Class clazz = metaData.getClazz();
                 if (clazz == Integer.TYPE) {
                     int[] finalArray = new int[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readInt();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readInt();
                     return finalArray;
                 } else if (clazz == Byte.TYPE) {
                     byte[] finalArray = new byte[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
+                    cache.putObjectInCacheRead(referenceId, finalArray);
                     input.readFully(finalArray);
                     return finalArray;
                 } else if (clazz == Long.TYPE) {
-                    long[] finalArray= new long[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readLong();
+                    long[] finalArray = new long[length];
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readLong();
                     return finalArray;
                 } else if (clazz == Float.TYPE) {
                     float[] finalArray = new float[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readFloat();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readFloat();
                     return finalArray;
                 } else if (clazz == Double.TYPE) {
                     double[] finalArray = new double[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readDouble();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readDouble();
                     return finalArray;
                 } else if (clazz == Short.TYPE) {
                     short[] finalArray = new short[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readShort();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readShort();
                     return finalArray;
                 } else if (clazz == Character.TYPE) {
                     char[] finalArray = new char[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readChar();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readChar();
                     return finalArray;
                 } else if (clazz == Boolean.TYPE) {
                     boolean[] finalArray = new boolean[length];
-                    cache.putObjectInCacheRead(referenceId,finalArray);
-                    for (int i=0;i<finalArray.length;i++) finalArray[i] = input.readBoolean();
+                    cache.putObjectInCacheRead(referenceId, finalArray);
+                    for (int i = 0; i < finalArray.length; i++) finalArray[i] = input.readBoolean();
                     return finalArray;
                 } else {
                     throw new RuntimeException("Unexpected datatype " + clazz.getName());
                 }
-            } else
-            {
-                return readObjectArray(metaData,referenceId,cache, length, input);
+            } else {
+                return readObjectArray(metaData, referenceId, cache, length, input);
             }
-        }
-        catch (ClassNotFoundException ex)
-        {
+        } catch (ClassNotFoundException ex) {
             throw new SerializationException(ex);
         }
     }
@@ -183,25 +173,22 @@ public class ArrayPersister implements Persister
 
         int depthParam[] = new int[metaData.getArrayDepth()];
         depthParam[0] = length;
-        for (int i=1;i<depth;i++)
-        {
-            depthParam[i]=0;
+        for (int i = 1; i < depth; i++) {
+            depthParam[i] = 0;
         }
-        Object producedArray[] = (Object[]) Array.newInstance(metaData.getClazz(),depthParam);
+        Object producedArray[] = (Object[]) Array.newInstance(metaData.getClazz(), depthParam);
 
-        cache.putObjectInCacheRead(referenceId,producedArray);
+        cache.putObjectInCacheRead(referenceId, producedArray);
 
-        for (int i=0;i<length;i++)
-        {
+        for (int i = 0; i < length; i++) {
             producedArray[i] = input.readObject();
         }
         return producedArray;
     }
 
-	public boolean canPersist(Object obj)
-	{
-		// not implemented
-		return false;
-	}
+    public boolean canPersist(Object obj) {
+        // not implemented
+        return false;
+    }
 
 }

@@ -61,18 +61,16 @@ public class FloatContainer extends FinalContainer {
         return value != +0.0f ? Float.floatToIntBits(value) : 0;
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeFloat(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readFloat();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setFloat(obj,value);
+        field.setFloat(obj, value);
     }
 
 

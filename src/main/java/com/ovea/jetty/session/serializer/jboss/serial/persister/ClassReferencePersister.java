@@ -51,95 +51,74 @@ public class ClassReferencePersister implements Persister {
     }
 
     public void writeData(ClassMetaData clazzMetaData, ObjectOutput output, Object obj, ObjectSubstitutionInterface substitution) throws IOException {
-        Class clazz = (Class)obj;
+        Class clazz = (Class) obj;
 
         boolean isProxy = clazzMetaData.isProxy();
         output.writeBoolean(isProxy);
 
-        if (isProxy)
-        {
+        if (isProxy) {
             Class interfaces[] = clazz.getInterfaces();
             output.writeInt(interfaces.length);
-            for (int i=0;i<interfaces.length;i++)
-            {
+            for (int i = 0; i < interfaces.length; i++) {
                 output.writeUTF(interfaces[i].getName());
             }
-        } else
-        {
+        } else {
             output.writeUTF(clazz.getName());
         }
 
     }
 
-    public Object readData (ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException{
+    public Object readData(ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException {
         boolean isProxy = input.readBoolean();
 
-        if (isProxy)
-        {
+        if (isProxy) {
             int size = input.readInt();
             Class interfaces[] = new Class[size];
-            for (int i=0;i<interfaces.length;i++)
-            {
-                interfaces[i] = lookupClass(cache.getClassResolver(),loader,input.readUTF());
+            for (int i = 0; i < interfaces.length; i++) {
+                interfaces[i] = lookupClass(cache.getClassResolver(), loader, input.readUTF());
             }
 
-            Object proxyReturn = Proxy.getProxyClass(loader,interfaces);
-            cache.putObjectInCacheRead(referenceId,proxyReturn);
+            Object proxyReturn = Proxy.getProxyClass(loader, interfaces);
+            cache.putObjectInCacheRead(referenceId, proxyReturn);
             return proxyReturn;
 
-        }
-        else
-        {
+        } else {
             String name = input.readUTF();
-            Class classReturn = lookupClass(cache.getClassResolver(),loader, name);
-            cache.putObjectInCacheRead(referenceId,classReturn);
+            Class classReturn = lookupClass(cache.getClassResolver(), loader, name);
+            cache.putObjectInCacheRead(referenceId, classReturn);
             return classReturn;
         }
     }
 
     private Class lookupClass(ClassResolver resolver, ClassLoader loader, String name) throws IOException {
-    	if (name.equals("int"))
-    	{
-    		return Integer.TYPE;
-    	} else if (name.equals("long"))
-    	{
-    		return Long.TYPE;
-    	} else if (name.equals("double"))
-    	{
-    		return Double.TYPE;
-    	} else if (name.equals("float"))
-    	{
-    		return Float.TYPE;
-    	} else if (name.equals("char"))
-    	{
-    		return Character.TYPE;
-    	} else if (name.equals("boolean"))
-    	{
-    		return Boolean.TYPE;
-    	} else if (name.equals("byte"))
-    	{
-    		return Byte.TYPE;
-    	} else if (name.equals("short"))
-    	{
-    		return Short.TYPE;
-    	}
-    	else
-    	{
-    		ClassMetaData metaData = ClassMetamodelFactory.getClassMetaData(name,resolver,loader,false);
-    		if (metaData.isArray())
-    		{
-    			return metaData.getArrayRepresentation();
-    		}
-    		else
-    		{
-    			return metaData.getClazz();
-    		}
-    	}
+        if (name.equals("int")) {
+            return Integer.TYPE;
+        } else if (name.equals("long")) {
+            return Long.TYPE;
+        } else if (name.equals("double")) {
+            return Double.TYPE;
+        } else if (name.equals("float")) {
+            return Float.TYPE;
+        } else if (name.equals("char")) {
+            return Character.TYPE;
+        } else if (name.equals("boolean")) {
+            return Boolean.TYPE;
+        } else if (name.equals("byte")) {
+            return Byte.TYPE;
+        } else if (name.equals("short")) {
+            return Short.TYPE;
+        } else {
+            ClassMetaData metaData = ClassMetamodelFactory.getClassMetaData(name, resolver, loader, false);
+            if (metaData.isArray()) {
+                return metaData.getArrayRepresentation();
+            } else {
+                return metaData.getClazz();
+            }
+        }
     }
 
-    public boolean canPersist(Object obj)
-	{
-		// not implemented
-		return false;
-	}
+    public boolean canPersist(Object obj) {
+        // not implemented
+        return false;
+    }
 }

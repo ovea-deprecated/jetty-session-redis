@@ -19,9 +19,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.swing.*;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -36,27 +39,44 @@ public final class JBossSerializerTest implements Serializable {
 
     private int a = 1;
     private transient int b = 1;
+    private Map<String, Object> attributes = new HashMap<String, Object>();
 
     @Test
     public void test() throws Exception {
         a = 2;
         b = 2;
+        attributes.put("a", 1);
+        attributes.put("b", new String[]{"q", "w", "e", "r", "t", "y"});
+        attributes.put("c", InetAddress.getLocalHost());
+
         serializer.setGzip(true);
+
         JBossSerializerTest c = round(this);
+
         assertEquals(2, c.a);
         assertEquals(0, c.b);
-        round(new JFrame());
+        assertEquals(1, c.attributes.get("a"));
+        assertArrayEquals(new String[]{"q", "w", "e", "r", "t", "y"}, (String[]) c.attributes.get("b"));
+        assertEquals(InetAddress.getLocalHost(), c.attributes.get("c"));
     }
 
     @Test
     public void test_non_gzip() throws Exception {
         a = 2;
         b = 2;
+        attributes.put("a", 1);
+        attributes.put("b", new String[]{"q", "w", "e", "r", "t", "y"});
+        attributes.put("c", InetAddress.getLocalHost());
+
         serializer.setGzip(false);
+
         JBossSerializerTest c = round(this);
+
         assertEquals(2, c.a);
         assertEquals(0, c.b);
-        round(new JFrame());
+        assertEquals(1, c.attributes.get("a"));
+        assertArrayEquals(new String[]{"q", "w", "e", "r", "t", "y"}, (String[]) c.attributes.get("b"));
+        assertEquals(InetAddress.getLocalHost(), c.attributes.get("c"));
     }
 
     private <T> T round(T obj) {

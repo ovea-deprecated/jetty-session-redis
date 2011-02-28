@@ -30,78 +30,72 @@ import java.lang.reflect.Field;
 /**
  * @author clebert suconic
  */
-public class ClassMetadataField
-{
-	public ClassMetadataField(Field field)
-	{
+public class ClassMetadataField {
+    public ClassMetadataField(Field field) {
         this.setField(field);
         this.setFieldName(field.getName());
-        this.shaHash = HashStringUtil.hashName(field.getType().getName() +"$"+ field.getName());
+        this.shaHash = HashStringUtil.hashName(field.getType().getName() + "$" + field.getName());
         this.setObject(!ClassMetamodelFactory.isImmutable(field.getType()));
-	}
+    }
+
     String fieldName;
 
     FieldPersistentReference field;
 
-    /** Used only by {@link UnsafeFieldsManager} */
+    /**
+     * Used only by {@link UnsafeFieldsManager}
+     */
     long unsafeKey;
 
     boolean isObject;
-    
+
     long shaHash;
-    
-    /** Order the field appears on the slot */
+
+    /**
+     * Order the field appears on the slot
+     */
     short order;
 
 
     /**
      * @return Returns the field.
      */
-    public Field getField()
-    {
-    	return (Field)field.get();
+    public Field getField() {
+        return (Field) field.get();
     }
 
     /**
-     * @param field
-     *            The field to set.
+     * @param field The field to set.
      */
-    public void setField(Field afield)
-    {
-   		this.field = new FieldPersistentReference(afield,ClassMetaData.REFERENCE_TYPE_IN_USE);
+    public void setField(Field afield) {
+        this.field = new FieldPersistentReference(afield, ClassMetaData.REFERENCE_TYPE_IN_USE);
     }
 
     /**
      * @return Returns the fieldName.
      */
-    public String getFieldName()
-    {
+    public String getFieldName() {
         return fieldName;
     }
 
     /**
-     * @param fieldName
-     *            The fieldName to set.
+     * @param fieldName The fieldName to set.
      */
-    public void setFieldName(String fieldName)
-    {
+    public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
     }
 
     /**
      * @return Returns the isObject.
      */
-    public boolean isObject()
-    {
+    public boolean isObject() {
         return isObject;
     }
 
     /**
-     * @param isObject
-     *            The isObject to set.
+     * @param isObject The isObject to set.
      */
-    public void setObject(boolean isObject)
-    {
+    public void setObject(boolean isObject) {
         this.isObject = isObject;
     }
 
@@ -113,24 +107,21 @@ public class ClassMetadataField
         this.unsafeKey = unsafeKey;
     }
 
-	public long getShaHash() {
-		return shaHash;
-	}
+    public long getShaHash() {
+        return shaHash;
+    }
 
-	public void setShaHash(long shaHash) {
-		this.shaHash = shaHash;
-	}
+    public void setShaHash(long shaHash) {
+        this.shaHash = shaHash;
+    }
 
-	public short getOrder() {
-		return order;
-	}
+    public short getOrder() {
+        return order;
+    }
 
-	public void setOrder(short order) {
-		this.order = order;
-	}
+    public void setOrder(short order) {
+        this.order = order;
+    }
 
-	
-    
-    
 
 }

@@ -28,10 +28,9 @@ package com.ovea.jetty.session.serializer.jboss.serial;
  * @author <a href="mailto:clebert.suconic@jboss.com">Clebert Suconic</a>
  */
 public class Version {
-    private static final String VERSION="1.0.3.GA";
+    private static final String VERSION = "1.0.3.GA";
 
-    public static void main(String arg[])
-    {
+    public static void main(String arg[]) {
         System.out.println(VERSION);
     }
 }

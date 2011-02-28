@@ -62,18 +62,16 @@ public class DoubleContainer extends FinalContainer {
         return (int) (temp ^ (temp >>> 32));
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeDouble(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readDouble();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setDouble(obj,value);
+        field.setDouble(obj, value);
     }
 
 }

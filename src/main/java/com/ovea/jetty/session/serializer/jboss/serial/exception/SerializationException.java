@@ -30,17 +30,16 @@ import java.io.IOException;
  * @author <a href="mailto:clebert.suconic@jboss.com">Clebert Suconic</a>
  */
 public class SerializationException extends IOException {
-    public SerializationException(String message, Exception source)
-    {
+    public SerializationException(String message, Exception source) {
         this(message);
         this.initCause(source);
     }
-    public SerializationException(String message)
-    {
+
+    public SerializationException(String message) {
         super(message);
     }
-    public SerializationException(Exception ex)
-    {
-        this(ex.getMessage(),ex);
+
+    public SerializationException(Exception ex) {
+        this(ex.getMessage(), ex);
     }
 }

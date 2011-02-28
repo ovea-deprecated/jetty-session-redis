@@ -22,9 +22,11 @@
 
 package com.ovea.jetty.session.serializer.jboss.serial.classmetamodel;
 
-/** This interface is implemented by JbossobjectinputStream, and its used to validate if a class has readResolve implemented */
+/**
+ * This interface is implemented by JbossobjectinputStream, and its used to validate if a class has readResolve implemented
+ */
 public interface ClassResolver {
 
-	public Class resolveClass(String name) throws ClassNotFoundException;
-	
+    public Class resolveClass(String name) throws ClassNotFoundException;
+
 }

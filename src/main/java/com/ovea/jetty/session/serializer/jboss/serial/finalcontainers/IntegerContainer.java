@@ -61,18 +61,16 @@ public class IntegerContainer extends FinalContainer {
         return value;
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeInt(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readInt();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setInt(obj,value);
+        field.setInt(obj, value);
     }
 
 

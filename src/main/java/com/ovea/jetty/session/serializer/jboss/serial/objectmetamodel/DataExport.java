@@ -26,15 +26,15 @@ package com.ovea.jetty.session.serializer.jboss.serial.objectmetamodel;
 /**
  * DataExport is class which <b>is not part of the public API</b> used only during
  * the persistence of the meta-model into bytes which happens at {@link org.jboss.serial.objectmetamodel.DataContainer#saveData(java.io.DataOutput)} and {@link org.jboss.serial.objectmetamodel.DataContainer#loadData(DataInput))}
- *
+ * <p/>
  * So... <b> Don't use this class </b>
- *
+ * <p/>
  * $Id: DataExport.java 137 2006-02-24 20:33:13Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public abstract class DataExport
-{
-     //public abstract void writeMyself(DataOutput output) throws IOException;
-     //public abstract void readMyself(DataInput input) throws IOException;
+public abstract class DataExport {
+    //public abstract void writeMyself(DataOutput output) throws IOException;
+    //public abstract void readMyself(DataInput input) throws IOException;
 
 }

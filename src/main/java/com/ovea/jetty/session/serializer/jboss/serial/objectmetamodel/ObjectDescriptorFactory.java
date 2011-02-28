@@ -27,7 +27,6 @@ import com.ovea.jetty.session.serializer.jboss.serial.classmetamodel.ClassMetamo
 import com.ovea.jetty.session.serializer.jboss.serial.classmetamodel.StreamingClass;
 import com.ovea.jetty.session.serializer.jboss.serial.exception.SerializationException;
 import com.ovea.jetty.session.serializer.jboss.serial.util.ClassMetaConsts;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -35,218 +34,136 @@ import java.io.IOException;
 /**
  * @author clebert suconic
  */
-public class ObjectDescriptorFactory implements ClassMetaConsts
-{
-	private static final Logger log = Logger.getLogger(ObjectDescriptorFactory.class);
-   	private static final boolean isDebug = log.isDebugEnabled();
-
-   	
+public class ObjectDescriptorFactory implements ClassMetaConsts {
     static Object objectFromDescription(final ObjectsCache cache,
-                                        ObjectsCache.JBossSeralizationInputInterface input) throws IOException
-	{
-    	if (cache.getSubstitution() != null)
-    	{
-    		return cache.getSubstitution().replaceObject(objectFromDescriptionInternal(cache, input));
-    	}
-    	else
-    	{
-    		return objectFromDescriptionInternal(cache, input);
-    	}
-	}
+                                        ObjectsCache.JBossSeralizationInputInterface input) throws IOException {
+        if (cache.getSubstitution() != null) {
+            return cache.getSubstitution().replaceObject(objectFromDescriptionInternal(cache, input));
+        } else {
+            return objectFromDescriptionInternal(cache, input);
+        }
+    }
 
-   	
-   	private static Object objectFromDescriptionInternal(final ObjectsCache cache,
-    									                ObjectsCache.JBossSeralizationInputInterface input)
-            throws IOException
-    {
+
+    private static Object objectFromDescriptionInternal(final ObjectsCache cache,
+                                                        ObjectsCache.JBossSeralizationInputInterface input)
+            throws IOException {
         Object description = null;
 
-        byte byteIdentify = (byte)cache.getInput().readByte();
+        byte byteIdentify = (byte) cache.getInput().readByte();
 
-        if (byteIdentify==DataContainerConstants.RESET)
-        {
-        	cache.reset();
-        	return objectFromDescription(cache,input);
+        if (byteIdentify == DataContainerConstants.RESET) {
+            cache.reset();
+            return objectFromDescription(cache, input);
         }
-        if (byteIdentify==DataContainerConstants.NULLREF)
-        {
-        	return null;
-        }
-        else
-        if (byteIdentify==DataContainerConstants.NEWDEF)
-        {
-        	if (isDebug)
-        	{
-        		log.debug("objectFromDescription::reading new definition");
-        	}
-            return readObjectDescriptionFromStreaming(cache,input);
-        }
-        else if (byteIdentify==DataContainerConstants.SMARTCLONE_DEF)
-        {
-        	int reference=input.readObjectReference();
-        	if (isDebug)
-        	{
-        		log.debug("objectFromDescription::reading reference from safeClone=" + reference);
-        	}
-    		if (cache.getSafeToReuse()==null)
-    		{
-    			throw new IOException("SafeClone repository mismatch");
-    		}
-    		description = cache.getSafeToReuse().findReference(reference);
-    		if (description==null)
-    		{
-    			throw new IOException("SafeClone repository mismatch - didn't find reference " + reference);
-    		}
-    		return description;
-        	
-        }
-        else if (byteIdentify==DataContainerConstants.OBJECTREF)
-        {
-        	int reference=input.readObjectReference();
-        	if (isDebug)
-        	{
-        		log.debug("objectFromDescription::reading circular definition reference=" + reference);
-        	}
+        if (byteIdentify == DataContainerConstants.NULLREF) {
+            return null;
+        } else if (byteIdentify == DataContainerConstants.NEWDEF) {
 
-        	if (description==null)
-            {
+            return readObjectDescriptionFromStreaming(cache, input);
+        } else if (byteIdentify == DataContainerConstants.SMARTCLONE_DEF) {
+            int reference = input.readObjectReference();
+            if (cache.getSafeToReuse() == null) {
+                throw new IOException("SafeClone repository mismatch");
+            }
+            description = cache.getSafeToReuse().findReference(reference);
+            if (description == null) {
+                throw new IOException("SafeClone repository mismatch - didn't find reference " + reference);
+            }
+            return description;
+
+        } else if (byteIdentify == DataContainerConstants.OBJECTREF) {
+            int reference = input.readObjectReference();
+            if (description == null) {
                 description = cache.findObjectInCacheRead(reference);
             }
 
-            if (description==null)
-            {
+            if (description == null) {
                 throw new SerializationException("Object reference " + reference + " was not found");
             }
 
             return description;
-        }
-        else
-        {
-        	return cache.getObjectDescriptorStrategy().readObjectSpecialCase(input, cache, byteIdentify);
+        } else {
+            return cache.getObjectDescriptorStrategy().readObjectSpecialCase(input, cache, byteIdentify);
         }
 
     }
 
-    
 
-
-	/** First level of a describe object, will look if it's a newDef, or if it's already loaded.
-     *  If the object was never loaded before, it will call readObjectDescriptionFromStreaming.
-     *  If it was already loaded, it will just return from objectCache 
+    /**
+     * First level of a describe object, will look if it's a newDef, or if it's already loaded.
+     * If the object was never loaded before, it will call readObjectDescriptionFromStreaming.
+     * If it was already loaded, it will just return from objectCache
      */
-   	static void describeObject(final ObjectsCache cache, Object obj) throws IOException
-   	{
-   	    ObjectsCache.JBossSeralizationOutputInterface outputParent = cache.getOutput();
-   	    ObjectDescriptorStrategy objectDescriptorStrategy = cache.getObjectDescriptorStrategy();
+    static void describeObject(final ObjectsCache cache, Object obj) throws IOException {
+        ObjectsCache.JBossSeralizationOutputInterface outputParent = cache.getOutput();
+        ObjectDescriptorStrategy objectDescriptorStrategy = cache.getObjectDescriptorStrategy();
 
-        if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, obj))
-        {
-           return;
+        if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, obj)) {
+            return;
         }
 
         ClassMetaData metaData = getMetaData(obj, cache);
-        
-        if (objectDescriptorStrategy.writeDuplicateObject(outputParent, cache, obj, metaData))
-        {
-           return;
+
+        if (objectDescriptorStrategy.writeDuplicateObject(outputParent, cache, obj, metaData)) {
+            return;
         }
-        
+
         Object originalObject = obj;
         Object newObject = obj;
-        
-        do
-        {
-           obj = newObject;
-           metaData = getMetaData(obj, cache);
-           newObject = objectDescriptorStrategy.replaceObjectByClass(cache, obj, metaData);
-           
-           if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, newObject))
-           {
-              return;
-           }
+
+        do {
+            obj = newObject;
+            metaData = getMetaData(obj, cache);
+            newObject = objectDescriptorStrategy.replaceObjectByClass(cache, obj, metaData);
+
+            if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, newObject)) {
+                return;
+            }
         }
-   	    while (!objectDescriptorStrategy.doneReplacing(cache, newObject, obj, metaData));
+        while (!objectDescriptorStrategy.doneReplacing(cache, newObject, obj, metaData));
 
         obj = newObject;
         metaData = getMetaData(obj, cache);
-        
-        if (cache.getSubstitution()!=null)
-        {
-            if (isDebug)
-            {
-                log.debug("describeObject::checking substitution on interface");
-            }
+
+        if (cache.getSubstitution() != null) {
             Object orig = obj;
             obj = cache.getSubstitution().replaceObject(obj);
-            if (obj!=orig)
-            {
-                if (isDebug)
-                {
-                    log.debug("describeObject::on check interface, original object[" + orig.getClass().getName() +"] was replaced by [" + obj.getClass().getName() + "]");
+            if (obj != orig) {
+                if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, obj)) {
+                    return;
                 }
-                if (objectDescriptorStrategy.writeObjectSpecialCase(outputParent, cache, obj))
-                {
-                   return;
-                }
-                
+
                 metaData = getMetaData(obj, cache);
             }
-        }
-        
-        if (isDebug)
-        {
-			if (obj==null)
-	        {
-				log.debug("obj==null",new Exception());
-	        }
-        }
-        if (isDebug)
-        {
-        	log.debug("describeObject for class=" + obj.getClass().getName());
         }
 
         int description = 0;
 
-        if (cache.getSafeToReuse()!=null)
-        {
+        if (cache.getSafeToReuse() != null) {
             description = cache.getSafeToReuse().storeSafe(obj);
-            if (description!=0)
-            {
-            	if (isDebug)
-            	{
-            		log.debug("describeObject::a safeClone reference " + description);
-            	}
+            if (description != 0) {
                 outputParent.writeByte(DataContainerConstants.SMARTCLONE_DEF);
-            	cache.getOutput().addObjectReference(description);
+                cache.getOutput().addObjectReference(description);
                 return;
             }
-            
+
         }
 
         description = cache.findIdInCacheWrite(obj, metaData.isImmutable());
 
         if (description != 0) // Shouldn't happen.
         {
-        	if (isDebug)
-        	{
-        		log.debug("describeObject::a circular reference " + description);
-        	}
             outputParent.writeByte(DataContainerConstants.OBJECTREF);
             cache.getOutput().addObjectReference(description);
             return;
-        } else
-        {
-           
+        } else {
+
             ClassMetaData originalMetaData = metaData;
-            if (obj != originalObject)
-            {
-               originalMetaData = getMetaData(originalObject, cache);
+            if (obj != originalObject) {
+                originalMetaData = getMetaData(originalObject, cache);
             }
-        	description = cache.putObjectInCacheWrite(originalObject, originalMetaData.isImmutable());
-        	if (isDebug)
-        	{
-        		log.debug("describeObject::a new reference " + description);
-        	}
+            description = cache.putObjectInCacheWrite(originalObject, originalMetaData.isImmutable());
             outputParent.writeByte(DataContainerConstants.NEWDEF);
             cache.getOutput().addObjectReference(description);
             cache.getClassDescriptorStrategy().writeClassDescription(obj, metaData, cache, description);
@@ -256,23 +173,18 @@ public class ObjectDescriptorFactory implements ClassMetaConsts
         }
     }
 
-	private static Object readObjectDescriptionFromStreaming(final ObjectsCache cache,
-                                                             ObjectsCache.JBossSeralizationInputInterface input) throws IOException
-    {
-	    int reference = input.readObjectReference();
-	    StreamingClass streamingClass = cache.getClassDescriptorStrategy().readClassDescription(cache, input, cache.getClassResolver(), null);
+    private static Object readObjectDescriptionFromStreaming(final ObjectsCache cache,
+                                                             ObjectsCache.JBossSeralizationInputInterface input) throws IOException {
+        int reference = input.readObjectReference();
+        StreamingClass streamingClass = cache.getClassDescriptorStrategy().readClassDescription(cache, input, cache.getClassResolver(), null);
         return cache.getObjectDescriptorStrategy().readObject(input, cache, streamingClass, reference);
     }
-	
-	private static ClassMetaData getMetaData(Object obj, ObjectsCache cache) throws IOException
-	{
-       if (obj instanceof Class)
-       {
-          return ClassMetamodelFactory.getClassMetaData((Class)obj,false);
-       }
-       else
-       {
-          return ClassMetamodelFactory.getClassMetaData(obj.getClass(),cache.isCheckSerializableClass());
-       }
-	}
+
+    private static ClassMetaData getMetaData(Object obj, ObjectsCache cache) throws IOException {
+        if (obj instanceof Class) {
+            return ClassMetamodelFactory.getClassMetaData((Class) obj, false);
+        } else {
+            return ClassMetamodelFactory.getClassMetaData(obj.getClass(), cache.isCheckSerializableClass());
+        }
+    }
 }

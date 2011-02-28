@@ -39,170 +39,144 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ClassMetaDataSlot implements ClassMetaConsts
-{
-	
-	public ClassMetaDataSlot(Class slotClass)
-	{
-		this.slotClass = new WeakReference(slotClass);
-		this.name = slotClass.getName();
-		this.shaHash = HashStringUtil.hashName(this.name);
+public class ClassMetaDataSlot implements ClassMetaConsts {
 
-		if (!Serializable.class.isAssignableFrom(slotClass))
-		{
-			explorefieldsNonSerializable(slotClass);
-		}
-		else
-		{
-			exploreFields(slotClass);
-		}
-		explorePrivateMethod(slotClass);
-	}
-	
-	private void explorePrivateMethod(Class slotClass)
-	{
-    	Method method = null;
-        try
-        {
-            method = slotClass.getDeclaredMethod("readObject",new Class[]{ObjectInputStream.class});
+    public ClassMetaDataSlot(Class slotClass) {
+        this.slotClass = new WeakReference(slotClass);
+        this.name = slotClass.getName();
+        this.shaHash = HashStringUtil.hashName(this.name);
+
+        if (!Serializable.class.isAssignableFrom(slotClass)) {
+            explorefieldsNonSerializable(slotClass);
+        } else {
+            exploreFields(slotClass);
+        }
+        explorePrivateMethod(slotClass);
+    }
+
+    private void explorePrivateMethod(Class slotClass) {
+        Method method = null;
+        try {
+            method = slotClass.getDeclaredMethod("readObject", new Class[]{ObjectInputStream.class});
             method.setAccessible(true);
             this.setPrivateMethodRead(method);
-        }
-        catch (Exception ignored)
-        {
+        } catch (Exception ignored) {
         }
 
-        try
-        {
-            method = slotClass.getDeclaredMethod("writeObject",new Class[]{ObjectOutputStream.class});
+        try {
+            method = slotClass.getDeclaredMethod("writeObject", new Class[]{ObjectOutputStream.class});
             method.setAccessible(true);
             this.setPrivateMethodWrite(method);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored)
-        {
-        }
-	}
-	
-	private void exploreFields(Class slotClass)
-	{
+    }
+
+    private void exploreFields(Class slotClass) {
         Field[] fields = slotClass.getDeclaredFields();
         ArrayList fieldsList = new ArrayList();
-        for (short i = 0; i < fields.length; i++)
-        {
-            if ((fields[i].getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC))==0)
-            {
+        for (short i = 0; i < fields.length; i++) {
+            if ((fields[i].getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC)) == 0) {
                 fields[i].setAccessible(true);
                 ClassMetadataField classfield = new ClassMetadataField(fields[i]);
                 FieldsManager.getFieldsManager().fillMetadata(classfield);
-                this.addField(classfield.getShaHash(),classfield.getFieldName(),classfield);
-                classfield.setOrder((short)fieldsList.size());
+                this.addField(classfield.getShaHash(), classfield.getFieldName(), classfield);
+                classfield.setOrder((short) fieldsList.size());
                 fieldsList.add(classfield);
             }
         }
-        this.fieldsCollection =(ClassMetadataField[])fieldsList.toArray(new ClassMetadataField[fieldsList.size()]);
-	}
-	
-	private void explorefieldsNonSerializable(Class slotClass)
-	{
+        this.fieldsCollection = (ClassMetadataField[]) fieldsList.toArray(new ClassMetadataField[fieldsList.size()]);
+    }
+
+    private void explorefieldsNonSerializable(Class slotClass) {
         ArrayList fieldsList = new ArrayList();
-		while (slotClass!=null && slotClass!=Object.class)
-		{
-	        Field[] fields = slotClass.getDeclaredFields();
-	        for (short i = 0; i < fields.length; i++)
-	        {
-	            if ((fields[i].getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC))==0)
-	            {
-	                fields[i].setAccessible(true);
-	                ClassMetadataField classfield = new ClassMetadataField(fields[i]);
-	                FieldsManager.getFieldsManager().fillMetadata(classfield);
-	                this.addField(classfield.getShaHash(),classfield.getFieldName(),classfield);
-	                classfield.setOrder((short)fieldsList.size());
-	                fieldsList.add(classfield);
-	            }
-	        }
-	        slotClass=slotClass.getSuperclass();
-		}
-        this.fieldsCollection =(ClassMetadataField[])fieldsList.toArray(new ClassMetadataField[fieldsList.size()]);
-	}
-	
-	WeakReference slotClass;
-	String name;
+        while (slotClass != null && slotClass != Object.class) {
+            Field[] fields = slotClass.getDeclaredFields();
+            for (short i = 0; i < fields.length; i++) {
+                if ((fields[i].getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC)) == 0) {
+                    fields[i].setAccessible(true);
+                    ClassMetadataField classfield = new ClassMetadataField(fields[i]);
+                    FieldsManager.getFieldsManager().fillMetadata(classfield);
+                    this.addField(classfield.getShaHash(), classfield.getFieldName(), classfield);
+                    classfield.setOrder((short) fieldsList.size());
+                    fieldsList.add(classfield);
+                }
+            }
+            slotClass = slotClass.getSuperclass();
+        }
+        this.fieldsCollection = (ClassMetadataField[]) fieldsList.toArray(new ClassMetadataField[fieldsList.size()]);
+    }
+
+    WeakReference slotClass;
+    String name;
     HashMap fields = new HashMap();
     TLongObjectHashMap hashFields = new TLongObjectHashMap();
     long shaHash;
-    
+
     PersistentReference privateMethodWrite = emptyReference;
     PersistentReference privateMethodRead = emptyReference;
-    
-    /** This collection exists just to ensure order.
-     *  @todo - If it's possible to use a fastHashMap that keeps the order, this fieldsCollections should go away */
+
+    /**
+     * This collection exists just to ensure order.
+     *
+     * @todo - If it's possible to use a fastHashMap that keeps the order, this fieldsCollections should go away
+     */
     ClassMetadataField[] fieldsCollection;
 
-    public Class getSlotClass()
-    {
-    	return (Class)slotClass.get();
+    public Class getSlotClass() {
+        return (Class) slotClass.get();
     }
-    
-    public void setSlotClass(Class newSlotClass)
-    {
-       slotClass = new WeakReference(newSlotClass);
+
+    public void setSlotClass(Class newSlotClass) {
+        slotClass = new WeakReference(newSlotClass);
     }
 
     /**
      * @param fieldName
      * @param classfield
      */
-    private void addField(long shaHashKey, String fieldName, ClassMetadataField classfield)
-    {
-        this.fields.put(fieldName,classfield);
-        this.hashFields.put(shaHashKey,classfield);
+    private void addField(long shaHashKey, String fieldName, ClassMetadataField classfield) {
+        this.fields.put(fieldName, classfield);
+        this.hashFields.put(shaHashKey, classfield);
     }
 
     /**
      * @return
      */
-    public ClassMetadataField getField(String name)
-    {
-        return (ClassMetadataField)this.fields.get(name);
-    }
-    
-    public ClassMetadataField getField(long shaKey)
-    {
-    	return (ClassMetadataField)this.hashFields.get(shaKey);
-    }
-    
-    public ClassMetadataField[] getFields()
-    {
-    	return fieldsCollection;
+    public ClassMetadataField getField(String name) {
+        return (ClassMetadataField) this.fields.get(name);
     }
 
-    public Method getPrivateMethodRead() 
-    {
-        return (Method)privateMethodRead.get();
+    public ClassMetadataField getField(long shaKey) {
+        return (ClassMetadataField) this.hashFields.get(shaKey);
     }
 
-    public void setPrivateMethodRead(Method privateMethodRead)
-    {
-        this.privateMethodRead = new MethodPersistentReference(privateMethodRead,REFERENCE_TYPE_IN_USE);
+    public ClassMetadataField[] getFields() {
+        return fieldsCollection;
     }
 
-    public Method getPrivateMethodWrite() 
-    {
-        return (Method)privateMethodWrite.get();
+    public Method getPrivateMethodRead() {
+        return (Method) privateMethodRead.get();
     }
 
-    public void setPrivateMethodWrite(Method privateMethodWrite)
-    {
-        this.privateMethodWrite = new MethodPersistentReference(privateMethodWrite,REFERENCE_TYPE_IN_USE);
+    public void setPrivateMethodRead(Method privateMethodRead) {
+        this.privateMethodRead = new MethodPersistentReference(privateMethodRead, REFERENCE_TYPE_IN_USE);
     }
 
-	public long getShaHash() {
-		return shaHash;
-	}
+    public Method getPrivateMethodWrite() {
+        return (Method) privateMethodWrite.get();
+    }
 
-	public void setShaHash(long shaHash) {
-		this.shaHash = shaHash;
-	}
-	
+    public void setPrivateMethodWrite(Method privateMethodWrite) {
+        this.privateMethodWrite = new MethodPersistentReference(privateMethodWrite, REFERENCE_TYPE_IN_USE);
+    }
+
+    public long getShaHash() {
+        return shaHash;
+    }
+
+    public void setShaHash(long shaHash) {
+        this.shaHash = shaHash;
+    }
+
 
 }

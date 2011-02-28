@@ -61,18 +61,16 @@ public class LongContainer extends FinalContainer {
         return (int) (value ^ (value >>> 32));
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeLong(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readLong();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setLong(obj,value);
+        field.setLong(obj, value);
     }
 
 }

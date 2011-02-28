@@ -31,27 +31,25 @@ import java.io.IOException;
 /**
  * @author <a href="clebert.suconic@jboss.com">Clebert Suconic</a>
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
- * @version 
- * <p>
- * Copyright Feb 1, 2009
- * </p>
+ * @version <p>
+ *          Copyright Feb 1, 2009
+ *          </p>
  */
-public interface ObjectDescriptorStrategy
-{
-   public boolean writeObjectSpecialCase(JBossSeralizationOutputInterface output, ObjectsCache cache, Object obj) throws IOException;
-   
-   public boolean writeDuplicateObject(JBossSeralizationOutputInterface output, ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
-   
-   public Object replaceObjectByClass(ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
+public interface ObjectDescriptorStrategy {
+    public boolean writeObjectSpecialCase(JBossSeralizationOutputInterface output, ObjectsCache cache, Object obj) throws IOException;
 
-   public Object replaceObjectByStream(ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
-   
-   public boolean doneReplacing(ObjectsCache cache, Object newObject, Object oldObject, ClassMetaData oldMetaData) throws IOException;
-   
-   public void writeObject(JBossSeralizationOutputInterface output, ObjectsCache cache, ClassMetaData metadata, Object obj) throws IOException;
+    public boolean writeDuplicateObject(JBossSeralizationOutputInterface output, ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
 
-   public Object readObjectSpecialCase(JBossSeralizationInputInterface input, ObjectsCache cache, byte byteIdentify) throws IOException;
+    public Object replaceObjectByClass(ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
 
-   public Object readObject(JBossSeralizationInputInterface input, ObjectsCache cache, StreamingClass streamingClass, int reference) throws IOException;
+    public Object replaceObjectByStream(ObjectsCache cache, Object obj, ClassMetaData metaData) throws IOException;
+
+    public boolean doneReplacing(ObjectsCache cache, Object newObject, Object oldObject, ClassMetaData oldMetaData) throws IOException;
+
+    public void writeObject(JBossSeralizationOutputInterface output, ObjectsCache cache, ClassMetaData metadata, Object obj) throws IOException;
+
+    public Object readObjectSpecialCase(JBossSeralizationInputInterface input, ObjectsCache cache, byte byteIdentify) throws IOException;
+
+    public Object readObject(JBossSeralizationInputInterface input, ObjectsCache cache, StreamingClass streamingClass, int reference) throws IOException;
 }
 

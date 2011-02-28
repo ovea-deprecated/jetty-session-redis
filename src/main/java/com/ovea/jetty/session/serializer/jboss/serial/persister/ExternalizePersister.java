@@ -35,10 +35,10 @@ import java.io.ObjectOutput;
 
 /**
  * $Id: ExternalizePersister.java 231 2006-04-24 23:49:41Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public class ExternalizePersister implements Persister
-{
+public class ExternalizePersister implements Persister {
     byte id;
 
     public byte getId() {
@@ -53,34 +53,29 @@ public class ExternalizePersister implements Persister
     /* (non-Javadoc)
      * @see org.jboss.serial.persister.Persister#writeData(org.jboss.serial.objectmetamodel.DataContainer, java.lang.Object)
      */
-    public void writeData(ClassMetaData metaData, ObjectOutput out, Object obj, ObjectSubstitutionInterface substitution) throws IOException
-    {
-        ((Externalizable)obj).writeExternal(out);
+    public void writeData(ClassMetaData metaData, ObjectOutput out, Object obj, ObjectSubstitutionInterface substitution) throws IOException {
+        ((Externalizable) obj).writeExternal(out);
     }
 
     /* (non-Javadoc)
      * @see org.jboss.serial.persister.Persister
      */
-    public Object readData (ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException
-    {
-    	
-        Object obj = metaData.newInstance();
-        cache.putObjectInCacheRead(referenceId,obj);
+    public Object readData(ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException {
 
-        try
-        {
-            ((Externalizable)obj).readExternal(input);
-        }
-        catch (ClassNotFoundException e){
+        Object obj = metaData.newInstance();
+        cache.putObjectInCacheRead(referenceId, obj);
+
+        try {
+            ((Externalizable) obj).readExternal(input);
+        } catch (ClassNotFoundException e) {
             throw new SerializationException(e);
         }
 
         return obj;
     }
 
-    public boolean canPersist(Object obj)
-	{
-		return false;
-	}
+    public boolean canPersist(Object obj) {
+        return false;
+    }
 
 }

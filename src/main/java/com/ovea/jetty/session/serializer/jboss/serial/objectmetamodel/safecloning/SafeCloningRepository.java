@@ -24,25 +24,20 @@ package com.ovea.jetty.session.serializer.jboss.serial.objectmetamodel.safecloni
 
 import com.ovea.jetty.session.serializer.jboss.serial.util.ClassMetaConsts;
 import gnu.trove.TObjectIntHashMap;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 
 /**
  * $Id: SafeCloningRepository.java 263 2006-05-02 04:45:03Z csuconic $
- *
+ * <p/>
  * Some objects may be completely reused during cloning operations. (For instance InvocationContext)
  *
  * @author <a href="mailto:clebert.suconic@jboss.com">Clebert Suconic</a>
  */
 public class SafeCloningRepository implements ClassMetaConsts {
 
-	private static final Logger log = Logger.getLogger(SafeCloningRepository.class);
-   	private static final boolean isDebug = log.isDebugEnabled();
-	
-	
-    public SafeCloningRepository(SafeClone safeClone)
-    {
+
+    public SafeCloningRepository(SafeClone safeClone) {
         this.safeClone = safeClone;
     }
 
@@ -51,45 +46,28 @@ public class SafeCloningRepository implements ClassMetaConsts {
     TObjectIntHashMap safeToReuse = new TObjectIntHashMap(identityHashStrategy);
     ArrayList reuse = new ArrayList();
 
-    public void clear()
-    {
-    	reuse.clear();
-    	safeToReuse.clear();
+    public void clear() {
+        reuse.clear();
+        safeToReuse.clear();
     }
-    
-    public int storeSafe(Object obj)
-    {
-        if (safeClone.isSafeToReuse(obj))
-        {
-        	int description=safeToReuse.get(obj);
 
-            if (description==0)
-            {
-                safeToReuse.put(obj,safeToReuse.size()+1);
+    public int storeSafe(Object obj) {
+        if (safeClone.isSafeToReuse(obj)) {
+            int description = safeToReuse.get(obj);
+
+            if (description == 0) {
+                safeToReuse.put(obj, safeToReuse.size() + 1);
                 description = safeToReuse.size();
-            	if (isDebug)
-            	{
-            		log.debug("storeSafe::Created a new storeSafe Reference=" + description + " obj=" + obj.getClass().getName());
-            	}
                 reuse.add(obj);
             }
             return description;
-        } else
-        {
+        } else {
             return 0;
         }
     }
 
-   public Object findReference(int reference)
-   {
-	   Object retobject = reuse.get(reference-1); 
-	   if (isDebug)
-	   {
-		   if (retobject!=null)
-		   {
-			   log.debug("findReference::found reference " + reference + " on an object=" + retobject.getClass().getName());
-		   }
-	   }
-       return retobject;
-   }
+    public Object findReference(int reference) {
+        Object retobject = reuse.get(reference - 1);
+        return retobject;
+    }
 }

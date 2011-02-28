@@ -35,7 +35,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:clebert.suconic@jboss.com">Clebert Suconic</a>
  */
-public class FieldsContainer  {
+public class FieldsContainer {
 
     ClassMetaDataSlot metaData;
 
@@ -50,149 +50,128 @@ public class FieldsContainer  {
         out.writeInt(fields);
     } */
 
-    /** both {@link org.jboss.serial.persister.RegularObjectPersister) and writeMyself need to produce the same binary compatible output while
+    /**
+     * both {@link org.jboss.serial.persister.RegularObjectPersister) and writeMyself need to produce the same binary compatible output while
      * it's not required by RegularObjectPersister to create an intermediate HashMap to read its fields. Becuase of that we
-     * have opted in keep static methods on FieldsContainer that will expose low level persistent operations */
-    public static void writeField(ObjectOutput out, Map.Entry entry) throws IOException
-    {
-        out.writeUTF((String)entry.getKey());
+     * have opted in keep static methods on FieldsContainer that will expose low level persistent operations
+     */
+    public static void writeField(ObjectOutput out, Map.Entry entry) throws IOException {
+        out.writeUTF((String) entry.getKey());
 
         final Object value = entry.getValue();
-        if (value  instanceof FinalContainer)
-        {
-            if (value instanceof BooleanContainer)
-            {
+        if (value instanceof FinalContainer) {
+            if (value instanceof BooleanContainer) {
                 out.writeByte(DataContainerConstants.BOOLEAN);
-                out.writeBoolean(((BooleanContainer)value).getValue());
-            }
-            else
-            if (value instanceof ByteContainer)
-            {
+                out.writeBoolean(((BooleanContainer) value).getValue());
+            } else if (value instanceof ByteContainer) {
                 out.writeByte(DataContainerConstants.BYTE);
-                out.writeByte(((ByteContainer)value).getValue());
-            }
-            else
-            if (value instanceof CharacterContainer)
-            {
+                out.writeByte(((ByteContainer) value).getValue());
+            } else if (value instanceof CharacterContainer) {
                 out.writeByte(DataContainerConstants.CHARACTER);
-                out.writeChar(((CharacterContainer)value).getValue());
-            }
-            else
-            if (value instanceof DoubleContainer)
-            {
+                out.writeChar(((CharacterContainer) value).getValue());
+            } else if (value instanceof DoubleContainer) {
                 out.writeByte(DataContainerConstants.DOUBLE);
-                out.writeDouble(((DoubleContainer)value).getValue());
-            }
-            else
-            if (value instanceof FloatContainer)
-            {
+                out.writeDouble(((DoubleContainer) value).getValue());
+            } else if (value instanceof FloatContainer) {
                 out.writeByte(DataContainerConstants.FLOAT);
-                out.writeFloat(((FloatContainer)value).getValue());
-            }
-            else
-            if (value instanceof IntegerContainer)
-            {
+                out.writeFloat(((FloatContainer) value).getValue());
+            } else if (value instanceof IntegerContainer) {
                 out.writeByte(DataContainerConstants.INTEGER);
-                out.writeInt(((IntegerContainer)value).getValue());
-            }
-            else
-            if (value instanceof LongContainer)
-            {
+                out.writeInt(((IntegerContainer) value).getValue());
+            } else if (value instanceof LongContainer) {
                 out.writeByte(DataContainerConstants.LONG);
-                out.writeLong(((LongContainer)value).getValue());
-            }
-            else
-            if (value instanceof ShortContainer)
-            {
+                out.writeLong(((LongContainer) value).getValue());
+            } else if (value instanceof ShortContainer) {
                 out.writeByte(DataContainerConstants.SHORT);
-                out.writeShort(((ShortContainer)value).getValue());
-            }
-            else
-            {
-                throw new RuntimeException ("Unexpected datatype " + value.getClass().getName());
+                out.writeShort(((ShortContainer) value).getValue());
+            } else {
+                throw new RuntimeException("Unexpected datatype " + value.getClass().getName());
             }
 
-        } else
-        {
+        } else {
             out.writeByte(DataContainerConstants.OBJECTREF);
             out.writeObject(value);
         }
     }
 
-    public void writeMyself(ObjectOutput output) throws IOException
-    {
-    	output.writeInt(fields.size());
+    public void writeMyself(ObjectOutput output) throws IOException {
+        output.writeInt(fields.size());
         Iterator iter = fields.entrySet().iterator();
-        while (iter.hasNext())
-        {
-            Map.Entry entry = (Map.Entry)iter.next();
-            writeField(output,entry);
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            writeField(output, entry);
         }
     }
 
 
-    /** both {@link org.jboss.serial.persister.RegularObjectPersister) and readMyself need to produce the same binary compatible output while
+    /**
+     * both {@link org.jboss.serial.persister.RegularObjectPersister) and readMyself need to produce the same binary compatible output while
      * it's not required by RegularObjectPersister to create an intermediate HashMap to read its fields. Becuase of that we
-     * have opted in keep static methods on FieldsContainer that will expose low level persistent operations */
+     * have opted in keep static methods on FieldsContainer that will expose low level persistent operations
+     */
     /*public static int readNumberOfFields(ObjectInput input) throws IOException
     {
         return input.readInt();
     }*/
-
-
-    public static Map.Entry readField(ObjectInput input) throws IOException,ClassNotFoundException
-    {
+    public static Map.Entry readField(ObjectInput input) throws IOException, ClassNotFoundException {
         String name = input.readUTF();
-        byte datatype = (byte)input.readByte();
+        byte datatype = (byte) input.readByte();
 
         Object value = null;
-        switch (datatype)
-        {
+        switch (datatype) {
             case DataContainerConstants.BOOLEAN:
-                value = BooleanContainer.valueOf(input.readBoolean()); break;
+                value = BooleanContainer.valueOf(input.readBoolean());
+                break;
 
             case DataContainerConstants.BYTE:
-                value = new ByteContainer(input.readByte()); break;
+                value = new ByteContainer(input.readByte());
+                break;
 
             case DataContainerConstants.CHARACTER:
-                value = new CharacterContainer(input.readChar()); break;
+                value = new CharacterContainer(input.readChar());
+                break;
 
             case DataContainerConstants.DOUBLE:
-                value = new DoubleContainer(input.readDouble()); break;
+                value = new DoubleContainer(input.readDouble());
+                break;
 
             case DataContainerConstants.FLOAT:
-                value = new FloatContainer(input.readFloat()); break;
+                value = new FloatContainer(input.readFloat());
+                break;
 
             case DataContainerConstants.INTEGER:
-                value = new IntegerContainer(input.readInt()); break;
+                value = new IntegerContainer(input.readInt());
+                break;
 
             case DataContainerConstants.LONG:
-                value = new LongContainer(input.readLong()); break;
+                value = new LongContainer(input.readLong());
+                break;
 
             case DataContainerConstants.SHORT:
-                value = new ShortContainer(input.readShort()); break;
+                value = new ShortContainer(input.readShort());
+                break;
 
             case DataContainerConstants.OBJECTREF:
-                value = input.readObject(); break;
+                value = input.readObject();
+                break;
 
             default:
                 throw new RuntimeException("Unexpected datatype " + datatype);
 
         }
 
-        return new EntryImpl(name,value);
+        return new EntryImpl(name, value);
     }
 
-    public static class EntryImpl implements Map.Entry
-    {
+    public static class EntryImpl implements Map.Entry {
         private Object key;
         private Object value;
 
-        public EntryImpl(Object key, Object value)
-        {
-            this.key=key;
-            this.value=value;
+        public EntryImpl(Object key, Object value) {
+            this.key = key;
+            this.value = value;
         }
+
         public Object getKey() {
             return key;
         }
@@ -206,233 +185,179 @@ public class FieldsContainer  {
         }
     }
 
-    public void readMyself(ObjectInput input) throws IOException,ClassNotFoundException
-    {
+    public void readMyself(ObjectInput input) throws IOException, ClassNotFoundException {
         fields.clear();
         int numberOfFields = input.readInt();
 
-        for (int i=0;i<numberOfFields;i++)
-        {
+        for (int i = 0; i < numberOfFields; i++) {
             Map.Entry entry = readField(input);
-            setField((String)entry.getKey(),entry.getValue());
+            setField((String) entry.getKey(), entry.getValue());
         }
     }
 
 
-    protected void setField(String name, Object value)
-    {
-        fields.put(name,value);
+    protected void setField(String name, Object value) {
+        fields.put(name, value);
     }
 
 
-    public FieldsContainer(ClassMetaDataSlot metaData)
-    {
-        this.metaData=metaData;
+    public FieldsContainer(ClassMetaDataSlot metaData) {
+        this.metaData = metaData;
     }
 
 
-    public ObjectInputStream.GetField createGet()
-    {
+    public ObjectInputStream.GetField createGet() {
         return new GetFieldImpl();
     }
 
-    public ObjectOutputStream.PutField createPut()
-    {
+    public ObjectOutputStream.PutField createPut() {
         return new PutFieldImpl();
     }
 
-    class GetFieldImpl extends ObjectInputStream.GetField
-    {
+    class GetFieldImpl extends ObjectInputStream.GetField {
         public GetFieldImpl() {
             super();
         }
-        public ObjectStreamClass getObjectStreamClass()
-        {
+
+        public ObjectStreamClass getObjectStreamClass() {
             return ObjectStreamClass.lookup(metaData.getSlotClass());
         }
 
-        public boolean defaulted(String name) throws IOException
-        {
-            return fields.get(name)==null;
+        public boolean defaulted(String name) throws IOException {
+            return fields.get(name) == null;
         }
 
-       public boolean get(String name, boolean val)
-           throws IOException
-       {
-           Boolean ret = (Boolean)fields.get(name);
+        public boolean get(String name, boolean val)
+                throws IOException {
+            Boolean ret = (Boolean) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           } else
-           {
-               return ret.booleanValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.booleanValue();
+            }
+        }
 
-       public byte get(String name, byte val) throws IOException
-       {
-           Byte ret = (Byte)fields.get(name);
+        public byte get(String name, byte val) throws IOException {
+            Byte ret = (Byte) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.byteValue();
-           }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.byteValue();
+            }
 
-       }
+        }
 
-       public char get(String name, char val) throws IOException
-       {
-           Character ret = (Character)fields.get(name);
+        public char get(String name, char val) throws IOException {
+            Character ret = (Character) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.charValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.charValue();
+            }
+        }
 
-       public short get(String name, short val) throws IOException
-       {
-           Short ret = (Short)fields.get(name);
+        public short get(String name, short val) throws IOException {
+            Short ret = (Short) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.shortValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.shortValue();
+            }
+        }
 
-       public int get(String name, int val) throws IOException
-       {
-           Integer ret = (Integer)fields.get(name);
+        public int get(String name, int val) throws IOException {
+            Integer ret = (Integer) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.intValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.intValue();
+            }
+        }
 
-       public long get(String name, long val) throws IOException
-       {
-           Long ret = (Long)fields.get(name);
+        public long get(String name, long val) throws IOException {
+            Long ret = (Long) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.longValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.longValue();
+            }
+        }
 
-       public float get(String name, float val) throws IOException
-       {
-           Float ret = (Float)fields.get(name);
+        public float get(String name, float val) throws IOException {
+            Float ret = (Float) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.floatValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.floatValue();
+            }
+        }
 
-       public double get(String name, double val) throws IOException
-       {
-           Double ret = (Double) fields.get(name);
+        public double get(String name, double val) throws IOException {
+            Double ret = (Double) fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret.doubleValue();
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret.doubleValue();
+            }
+        }
 
-       public Object get(String name, Object val) throws IOException
-       {
-           Object ret = fields.get(name);
+        public Object get(String name, Object val) throws IOException {
+            Object ret = fields.get(name);
 
-           if (ret==null)
-           {
-               return val;
-           }
-           else
-           {
-               return ret;
-           }
-       }
+            if (ret == null) {
+                return val;
+            } else {
+                return ret;
+            }
+        }
     }
 
-    class PutFieldImpl extends ObjectOutputStream.PutField
-    {
-        public void put(String name, boolean val)
-        {
-            setField(name,new Boolean(val));
+    class PutFieldImpl extends ObjectOutputStream.PutField {
+        public void put(String name, boolean val) {
+            setField(name, new Boolean(val));
         }
 
-        public void put(String name, byte val)
-        {
-            setField(name,new Byte(val));
+        public void put(String name, byte val) {
+            setField(name, new Byte(val));
         }
 
-        public void put(String name, char val)
-        {
-            setField(name,new Character(val));
+        public void put(String name, char val) {
+            setField(name, new Character(val));
         }
 
-        public void put(String name, short val)
-        {
-            setField(name,new Short(val));
+        public void put(String name, short val) {
+            setField(name, new Short(val));
         }
 
-        public void put(String name, int val)
-        {
-            setField(name,new Integer(val));
+        public void put(String name, int val) {
+            setField(name, new Integer(val));
         }
 
-        public void put(String name, long val)
-        {
-            setField(name,new Long(val));
+        public void put(String name, long val) {
+            setField(name, new Long(val));
         }
 
-        public void put(String name, float val)
-        {
+        public void put(String name, float val) {
             setField(name, new Float(val));
         }
 
-        public void put(String name, double val)
-        {
-            setField(name,new Double(val));
+        public void put(String name, double val) {
+            setField(name, new Double(val));
         }
 
-        public void put(String name, Object val)
-        {
+        public void put(String name, Object val) {
             setField(name, val);
         }
 
-        public void write(ObjectOutput out) throws IOException
-        {
+        public void write(ObjectOutput out) throws IOException {
             writeMyself(out);
         }
     }

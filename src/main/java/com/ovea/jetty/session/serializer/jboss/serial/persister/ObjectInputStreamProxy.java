@@ -33,66 +33,56 @@ import java.io.*;
  *
  * @author Clebert Suconic
  */
-public class ObjectInputStreamProxy extends ObjectInputStream
-{
+public class ObjectInputStreamProxy extends ObjectInputStream {
 
     Object currentObj;
     ClassMetaDataSlot currentMetaClass;
     ObjectSubstitutionInterface currentSubstitution;
 
     short[] fieldsKey;
-    
+
     ObjectInput input;
 
-    public ObjectInputStreamProxy(ObjectInput input, short[] fieldsKey, Object currentObj, ClassMetaDataSlot currentMetaClass, ObjectSubstitutionInterface currentSubstitution) throws IOException
-    {
+    public ObjectInputStreamProxy(ObjectInput input, short[] fieldsKey, Object currentObj, ClassMetaDataSlot currentMetaClass, ObjectSubstitutionInterface currentSubstitution) throws IOException {
         super();
         this.input = input;
-        this.fieldsKey=fieldsKey;
-        this.currentObj=currentObj;
-        this.currentMetaClass=currentMetaClass;
-        this.currentSubstitution=currentSubstitution;
+        this.fieldsKey = fieldsKey;
+        this.currentObj = currentObj;
+        this.currentMetaClass = currentMetaClass;
+        this.currentSubstitution = currentSubstitution;
     }
 
     protected Object readObjectOverride() throws IOException,
-            ClassNotFoundException
-    {
+            ClassNotFoundException {
         return input.readObject();
     }
 
-    public Object readUnshared() throws IOException, ClassNotFoundException
-    {
+    public Object readUnshared() throws IOException, ClassNotFoundException {
         return readObjectOverride();
     }
 
-    public void defaultReadObject() throws IOException, ClassNotFoundException
-    {
-        RegularObjectPersister.readSlotWithFields(fieldsKey,currentMetaClass,input,currentObj); // @todo - finish this
+    public void defaultReadObject() throws IOException, ClassNotFoundException {
+        RegularObjectPersister.readSlotWithFields(fieldsKey, currentMetaClass, input, currentObj); // @todo - finish this
     }
 
     public void registerValidation(ObjectInputValidation obj, int prio)
-            throws NotActiveException, InvalidObjectException
-    {
+            throws NotActiveException, InvalidObjectException {
     }
 
     protected void readStreamHeader() throws IOException,
-            StreamCorruptedException
-    {
+            StreamCorruptedException {
     }
 
     protected ObjectStreamClass readClassDescriptor() throws IOException,
-            ClassNotFoundException
-    {
+            ClassNotFoundException {
         return null;
     }
 
-    public int read() throws IOException
-    {
+    public int read() throws IOException {
         return input.read();
     }
 
-    public int read(byte[] buf, int off, int len) throws IOException
-    {
+    public int read(byte[] buf, int off, int len) throws IOException {
         return input.read(buf, off, len);
     }
 
@@ -100,91 +90,74 @@ public class ObjectInputStreamProxy extends ObjectInputStream
      * Returns the number of bytes that can be read without blocking.
      *
      * @return the number of available bytes.
-     * @throws java.io.IOException
-     *             if there are I/O errors while reading from the underlying
-     *             <code>InputStream</code>
+     * @throws java.io.IOException if there are I/O errors while reading from the underlying
+     *                             <code>InputStream</code>
      */
-    public int available() throws IOException
-    {
+    public int available() throws IOException {
         return 1;
     }
 
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
     }
 
-    public boolean readBoolean() throws IOException
-    {
+    public boolean readBoolean() throws IOException {
         return input.readBoolean();
     }
 
-    public byte readByte() throws IOException
-    {
+    public byte readByte() throws IOException {
         return input.readByte();
     }
 
-    public int readUnsignedByte() throws IOException
-    {
+    public int readUnsignedByte() throws IOException {
         return input.readUnsignedByte();
     }
 
-    public char readChar() throws IOException
-    {
+    public char readChar() throws IOException {
         return input.readChar();
     }
 
-    public short readShort() throws IOException
-    {
+    public short readShort() throws IOException {
         return input.readShort();
     }
 
-    public int readUnsignedShort() throws IOException
-    {
+    public int readUnsignedShort() throws IOException {
         return input.readUnsignedShort();
     }
 
-    public int readInt() throws IOException
-    {
+    public int readInt() throws IOException {
         return input.readInt();
     }
 
-    public long readLong() throws IOException
-    {
+    public long readLong() throws IOException {
         return input.readLong();
     }
 
-    public float readFloat() throws IOException
-    {
+    public float readFloat() throws IOException {
         return input.readFloat();
     }
 
-    public double readDouble() throws IOException
-    {
+    public double readDouble() throws IOException {
         return input.readDouble();
     }
 
-    public void readFully(byte[] buf) throws IOException
-    {
+    public void readFully(byte[] buf) throws IOException {
         input.readFully(buf);
     }
 
-    public void readFully(byte[] buf, int off, int len) throws IOException
-    {
+    public void readFully(byte[] buf, int off, int len) throws IOException {
         input.readFully(buf, off, len);
     }
 
-    public int skipBytes(int len) throws IOException
-    {
+    public int skipBytes(int len) throws IOException {
         return input.skipBytes(len);
     }
 
-    public String readLine() throws IOException
-    {
+    @SuppressWarnings({"deprecation"})
+    public String readLine() throws IOException {
         return input.readLine();
     }
 
-    public String readUTF() throws IOException
-    {
+    public String readUTF() throws IOException {
         return input.readUTF();
     }
 
@@ -193,8 +166,7 @@ public class ObjectInputStreamProxy extends ObjectInputStream
      *
      * @see java.io.ObjectInput#read(byte[])
      */
-    public int read(byte[] b) throws IOException
-    {
+    public int read(byte[] b) throws IOException {
         return input.read(b);
     }
 
@@ -203,15 +175,13 @@ public class ObjectInputStreamProxy extends ObjectInputStream
      *
      * @see java.io.ObjectInput#skip(long)
      */
-    public long skip(long n) throws IOException
-    {
+    public long skip(long n) throws IOException {
         return input.skip(n);
     }
 
 
     public GetField readFields()
-    	throws IOException, ClassNotFoundException
-    {
+            throws IOException, ClassNotFoundException {
         FieldsContainer container = new FieldsContainer(currentMetaClass);
         container.readMyself(this);
         return container.createGet();

@@ -29,14 +29,12 @@ import java.io.IOException;
 /**
  * @author <a href="clebert.suconic@jboss.com">Clebert Suconic</a>
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
- * @version 
- * <p>
- * Copyright Jan 28, 2009
- * </p>
+ * @version <p>
+ *          Copyright Jan 28, 2009
+ *          </p>
  */
-public interface ClassDescriptorStrategy
-{
-   void writeClassDescription(Object obj, ClassMetaData metaData, ObjectsCache cache, int description) throws IOException;
-   
-   StreamingClass readClassDescription(ObjectsCache cache, JBossSeralizationInputInterface input, ClassResolver classResolver, String className) throws IOException;
+public interface ClassDescriptorStrategy {
+    void writeClassDescription(Object obj, ClassMetaData metaData, ObjectsCache cache, int description) throws IOException;
+
+    StreamingClass readClassDescription(ObjectsCache cache, JBossSeralizationInputInterface input, ClassResolver classResolver, String className) throws IOException;
 }

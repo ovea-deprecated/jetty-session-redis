@@ -61,17 +61,15 @@ public class ShortContainer extends FinalContainer {
         return (int) value;
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeShort(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readShort();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setShort(obj,value);
+        field.setShort(obj, value);
     }
 }

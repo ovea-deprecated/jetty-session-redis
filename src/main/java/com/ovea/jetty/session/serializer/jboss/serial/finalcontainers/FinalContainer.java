@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
  *
  * @author <a href="mailto:clebert.suconic@jboss.com">Clebert Suconic</a>
  */
-public abstract class FinalContainer extends DataExport
-{
+public abstract class FinalContainer extends DataExport {
     public abstract void setPrimitive(Object obj, Field field) throws IllegalAccessException;
 }

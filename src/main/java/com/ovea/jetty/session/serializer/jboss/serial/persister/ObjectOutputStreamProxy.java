@@ -34,10 +34,10 @@ import java.io.ObjectStreamClass;
 
 /**
  * $Id: ObjectOutputStreamProxy.java 202 2006-04-11 23:13:09Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public class ObjectOutputStreamProxy extends ObjectOutputStream
-{
+public class ObjectOutputStreamProxy extends ObjectOutputStream {
 
     Object currentObj;
     ClassMetaDataSlot currentMetaClass;
@@ -46,13 +46,13 @@ public class ObjectOutputStreamProxy extends ObjectOutputStream
 
 
     ObjectOutput bout;
-    public ObjectOutputStreamProxy(ObjectOutput output, Object currentObj, ClassMetaDataSlot currentMetaClass, ObjectSubstitutionInterface currentSubstitution) throws IOException
-    {
+
+    public ObjectOutputStreamProxy(ObjectOutput output, Object currentObj, ClassMetaDataSlot currentMetaClass, ObjectSubstitutionInterface currentSubstitution) throws IOException {
         super();
-        this.bout=output;
-        this.currentObj=currentObj;
-        this.currentMetaClass=currentMetaClass;
-        this.currentSubstitution=currentSubstitution;
+        this.bout = output;
+        this.currentObj = currentObj;
+        this.currentMetaClass = currentMetaClass;
+        this.currentSubstitution = currentSubstitution;
     }
 
     protected void writeObjectOverride(Object obj) throws IOException {
@@ -68,14 +68,11 @@ public class ObjectOutputStreamProxy extends ObjectOutputStream
     }
 
     public void writeFields() throws IOException {
-        if (currentContainer!=null)
-        {
+        if (currentContainer != null) {
             currentContainer.writeMyself(this);
-            currentContainer=null;
-        }
-        else
-        {
-        	RegularObjectPersister.writeSlotWithFields(currentMetaClass,bout,currentObj, currentSubstitution);
+            currentContainer = null;
+        } else {
+            RegularObjectPersister.writeSlotWithFields(currentMetaClass, bout, currentObj, currentSubstitution);
         }
     }
 
@@ -86,35 +83,33 @@ public class ObjectOutputStreamProxy extends ObjectOutputStream
     }
 
     protected void writeClassDescriptor(ObjectStreamClass desc)
-    throws IOException
-    {
+            throws IOException {
     }
 
     /**
      * Writes a byte. This method will block until the byte is actually
      * written.
      *
-     * @param   val the byte to be written to the stream
-     * @throws  java.io.IOException If an I/O error has occurred.
+     * @param val the byte to be written to the stream
+     * @throws java.io.IOException If an I/O error has occurred.
      */
     public void write(int val) throws IOException {
-           bout.write(val);
+        bout.write(val);
     }
 
     /**
      * Writes an array of bytes. This method will block until the bytes are
      * actually written.
      *
-     * @param   buf the data to be written
-     * @throws  java.io.IOException If an I/O error has occurred.
+     * @param buf the data to be written
+     * @throws java.io.IOException If an I/O error has occurred.
      */
     public void write(byte[] buf) throws IOException {
         bout.write(buf);
     }
 
     public void write(byte[] buf, int off, int len) throws IOException {
-        if (buf == null)
-        {
+        if (buf == null) {
             throw new SerializationException("buf can't be null");
         }
         bout.write(buf, off, len);
@@ -124,7 +119,7 @@ public class ObjectOutputStreamProxy extends ObjectOutputStream
      * Flushes the stream. This will write any buffered output bytes and flush
      * through to the underlying stream.
      *
-     * @throws  java.io.IOException If an I/O error has occurred.
+     * @throws java.io.IOException If an I/O error has occurred.
      */
     public void flush() throws IOException {
         bout.flush();
@@ -143,23 +138,23 @@ public class ObjectOutputStreamProxy extends ObjectOutputStream
         bout.writeBoolean(val);
     }
 
-    public void writeByte(int val) throws IOException  {
+    public void writeByte(int val) throws IOException {
         bout.writeByte(val);
     }
 
-    public void writeShort(int val)  throws IOException {
+    public void writeShort(int val) throws IOException {
         bout.writeShort(val);
     }
 
-    public void writeChar(int val)  throws IOException {
+    public void writeChar(int val) throws IOException {
         bout.writeChar(val);
     }
 
-    public void writeInt(int val)  throws IOException {
+    public void writeInt(int val) throws IOException {
         bout.writeInt(val);
     }
 
-    public void writeLong(long val)  throws IOException {
+    public void writeLong(long val) throws IOException {
         bout.writeLong(val);
     }
 

@@ -52,50 +52,38 @@ public class ProxyPersister implements Persister {
         this.id = id;
     }
 
-    public void writeData(ClassMetaData metaData, ObjectOutput output, Object obj, ObjectSubstitutionInterface substitution) throws IOException{
+    public void writeData(ClassMetaData metaData, ObjectOutput output, Object obj, ObjectSubstitutionInterface substitution) throws IOException {
         Object handler = Proxy.getInvocationHandler(obj);
 
         output.writeObject(handler);
         output.writeObject(obj.getClass());
     }
 
-    public Object readData (ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException{
+    public Object readData(ClassLoader loader, StreamingClass streaming, ClassMetaData metaData, int referenceId, ObjectsCache cache, ObjectInput input, ObjectSubstitutionInterface substitution) throws IOException {
 
-        try
-        {
+        try {
             Object handler = input.readObject();
-            Class proxy = (Class)input.readObject();
-            Constructor constructor = proxy.getConstructor(new Class[] { InvocationHandler.class });
+            Class proxy = (Class) input.readObject();
+            Constructor constructor = proxy.getConstructor(new Class[]{InvocationHandler.class});
             Object obj = constructor.newInstance(new Object[]{handler});
-            cache.putObjectInCacheRead(referenceId,obj);
+            cache.putObjectInCacheRead(referenceId, obj);
             return obj;
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             throw new SerializationException(e);
-        }
-        catch (NoSuchMethodException e)
-        {
+        } catch (NoSuchMethodException e) {
             throw new SerializationException(e);
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new SerializationException(e);
-        }
-        catch (InstantiationException e)
-        {
+        } catch (InstantiationException e) {
             throw new SerializationException(e);
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (InvocationTargetException e) {
             throw new SerializationException(e);
         }
     }
-    
-	public boolean canPersist(Object obj)
-	{
-		// not implemented
-		return false;
-	}
-    
+
+    public boolean canPersist(Object obj) {
+        // not implemented
+        return false;
+    }
+
 }

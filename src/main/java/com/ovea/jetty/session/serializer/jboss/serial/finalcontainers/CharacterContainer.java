@@ -61,17 +61,15 @@ public class CharacterContainer extends FinalContainer {
         return (int) value;
     }
 
-    public void writeMyself(DataOutput output) throws IOException
-    {
+    public void writeMyself(DataOutput output) throws IOException {
         output.writeChar(value);
     }
 
-    public void readMyself(DataInput input) throws IOException
-    {
+    public void readMyself(DataInput input) throws IOException {
         value = input.readChar();
     }
 
     public void setPrimitive(Object obj, Field field) throws IllegalAccessException {
-        field.setChar(obj,value);
+        field.setChar(obj, value);
     }
 }

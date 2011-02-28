@@ -29,10 +29,11 @@ import java.lang.reflect.Constructor;
 /**
  * Find the constructor that respect the serialization behavior
  * $Id: ConstructorManager.java 175 2006-03-16 16:25:02Z csuconic $
+ *
  * @author Clebert Suconic
  */
-public abstract class ConstructorManager implements ClassMetaConsts
-{
+public abstract class ConstructorManager implements ClassMetaConsts {
     public abstract Constructor getConstructor(Class clazz) throws SecurityException, NoSuchMethodException;
+
     public abstract boolean isSupported();
 }
