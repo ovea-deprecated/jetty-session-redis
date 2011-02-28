@@ -10,6 +10,12 @@
     jetty-session-redis
     mvn package
 
+## Download
+
+All downloads are [here](https://github.com/Ovea/jetty-session-redis/downloads). They will also be available in Maven central repository and also in Sonatype OSS repositories soon.
+
+See the section below to know which package you need (the jar file or the -all bundle).
+
 ## Installation
 
 You can simply put the BUNDLE "*-all.jar" (i.e.jetty-session-redis-1.0-SNAPSHOT-all.jar) in the Jetty lib/ext foder. This bundle contains all the required dependencies, repackadged internally to not interfer with potential other versions on the classpath.
