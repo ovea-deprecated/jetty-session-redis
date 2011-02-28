@@ -24,7 +24,7 @@ import java.io.OutputStream;
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public final class JbossSerializer extends BinarySerializer {
+public final class JBossSerializer extends BinarySerializer {
     @Override
     protected void write(OutputStream out, Object o) throws Exception {
         JBossObjectOutputStream oos = new JBossObjectOutputStream(out);

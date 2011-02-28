@@ -105,7 +105,7 @@ Here is the list of provided Serializer:
 * com.ovea.jetty.session.serializer.JsonSerializer
 * com.ovea.jetty.session.serializer.JdkSerializer
 * com.ovea.jetty.session.serializer.XStreamSerializer
-* com.ovea.jetty.session.serializer.JbossSerializer
+* com.ovea.jetty.session.serializer.JBossSerializer
 
      <Set name="sessionHandler">
         <New class="org.eclipse.jetty.server.session.SessionHandler">

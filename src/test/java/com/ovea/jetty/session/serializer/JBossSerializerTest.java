@@ -28,11 +28,11 @@ import static org.junit.Assert.assertEquals;
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 @RunWith(JUnit4.class)
-public final class JbossSerializerTest implements Serializable {
+public final class JBossSerializerTest implements Serializable {
 
     private static final long serialVersionUID = -4758353525859226249L;
 
-    private transient JbossSerializer serializer = new JbossSerializer();
+    private transient JBossSerializer serializer = new JBossSerializer();
 
     private int a = 1;
     private transient int b = 1;
@@ -42,7 +42,7 @@ public final class JbossSerializerTest implements Serializable {
         a = 2;
         b = 2;
         serializer.setGzip(true);
-        JbossSerializerTest c = round(this);
+        JBossSerializerTest c = round(this);
         assertEquals(2, c.a);
         assertEquals(0, c.b);
         round(new JFrame());
@@ -53,7 +53,7 @@ public final class JbossSerializerTest implements Serializable {
         a = 2;
         b = 2;
         serializer.setGzip(false);
-        JbossSerializerTest c = round(this);
+        JBossSerializerTest c = round(this);
         assertEquals(2, c.a);
         assertEquals(0, c.b);
         round(new JFrame());
