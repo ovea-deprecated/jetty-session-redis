@@ -139,4 +139,4 @@ Here is the list of provided Serializer:
 
 ## Authors and help
 
-* <strong>Mathieu Carbou</strong> [mail](mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
+* <strong>Mathieu Carbou</strong> [mail](mailto:mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
