@@ -21,7 +21,7 @@ If you want to upgrade a dependency (i.e. Jedis), you may want to use instead th
 * xstream (optional)
 * jackson mapper (optional)
 
- ## Configuration
+## Configuration
 
 In Jetty server configuration file (i.e. jetty.xml):
 
