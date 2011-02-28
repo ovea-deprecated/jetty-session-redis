@@ -118,9 +118,4 @@ By default, session attributes are serialized in JSON using Jackson. This serial
         </New>
     </Set>
 
-You can also create your own ones. [.aaa] [See examples here https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer]
-[See examples here https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer]
-
-<a href="https://github.com/eishay/jvm-serializers/tree/0e353b5e90799b328f21664b730598dfd9618beb/tpc">Git tree</a>
-
-[aaa]: https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer
+You can also create your own ones (<a href="https://github.com/Ovea/jetty-session-redis/tree/master/src/main/java/com/ovea/jetty/session/serializer">see examples here</a>).
