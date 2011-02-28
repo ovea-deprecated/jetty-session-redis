@@ -27,6 +27,7 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>1.5.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- jetty classes + runner + jsp stack -->
@@ -124,9 +125,6 @@
                             <createSourcesJar>true</createSourcesJar>
                             <artifactSet>
                                 <includes>
-                                    <!-- redis -->
-                                    <include>redis.clients:jedis</include>
-                                    <include>commons-pool:commons-pool</include>
                                     <!-- jackson -->
                                     <include>org.codehaus.jackson:jackson-core-asl</include>
                                     <include>org.codehaus.jackson:jackson-mapper-asl</include>
@@ -138,15 +136,6 @@
                                 </includes>
                             </artifactSet>
                             <relocations>
-                                <!-- redis -->
-                                <relocation>
-                                    <pattern>redis.clients</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.jedis</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons.pool</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.pool</shadedPattern>
-                                </relocation>
                                 <!-- jackson -->
                                 <relocation>
                                     <pattern>org.codehaus.jackson</pattern>

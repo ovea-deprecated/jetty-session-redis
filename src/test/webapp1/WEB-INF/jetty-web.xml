@@ -23,6 +23,9 @@
 
     <Set name="contextPath">/webapp1</Set>
 
+    <!--
+        configure session clustering
+    -->
     <Get name="server">
         <Get id="RedisSessionIdManager" name="sessionIdManager"/>
     </Get>

@@ -18,14 +18,17 @@ See the section below to know which package you need (the jar file or the -all b
 
 ## Installation
 
-You can simply put the BUNDLE "*-all.jar" (i.e.jetty-session-redis-1.0-SNAPSHOT-all.jar) in the Jetty lib/ext foder. This bundle contains all the required dependencies, repackadged internally to not interfer with potential other versions on the classpath.
-
-If you want to upgrade a dependency (i.e. Jedis), you may want to use instead the JAR version (jetty-session-redis-1.0-SNAPSHOT.jar), and you'll have to put also in Jetty lib/ext foder all the required dependencies:
+You need to put in Jetty's lib/ext folder:
 
 * jedis
 * commons-pool
-* xstream (optional)
-* jackson mapper (optional)
+
+and one of the following JAR:
+
+* jetty-session-redis-X.Y.jar (if you are going to put all serializer dependencies also as independant jar files)
+* jetty-session-redis-X.Y-all.jar (contains already packaged-relocated serializers)
+
+I strongly recommand you use the jetty-session-redis-X.Y-all.jar because some serializers (like JBoss Serializer) have been improved for performance.
 
 ## Configuration
 
@@ -146,3 +149,8 @@ Here is the list of provided Serializer:
 ## Authors and help
 
 * <strong>Mathieu Carbou</strong> [mail](mailto:mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
+
+## TODO
+
+* Add asynchronous support for save tasks to not slow requests
+* Support save queues for each session to only take newer save requests
