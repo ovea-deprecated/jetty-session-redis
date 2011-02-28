@@ -92,9 +92,6 @@ In each web application context file using session clustering (i.e. in WEB-INF/j
                         <Arg>
                             <New class="com.ovea.jetty.session.serializer.JsonSerializer"/>
                         </Arg>
-                        <Set name="idManager">
-                            <Ref id="RedisSessionIdManager"/>
-                        </Set>
                         <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
                         <Set name="saveInterval">20</Set>
                         <!-- set the cookie domain -->
