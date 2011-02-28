@@ -31,8 +31,12 @@
             <Arg>
                 <New class="com.ovea.jetty.session.redis.RedisSessionManager">
                     <Arg>session/redis</Arg>
+                    <Arg>
+                        <New class="com.ovea.jetty.session.serializer.JsonSerializer"/>
+                    </Arg>
                     <!-- set the interval to force session persistence event if it didn't changed -->
-                    <Set name="saveInterval">30</Set>
+                    <Set name="saveInterval">20</Set>
+                    <Set name="sessionDomain">127.0.0.1</Set>
                     <Set name="idManager">
                         <Ref id="RedisSessionIdManager"/>
                     </Set>

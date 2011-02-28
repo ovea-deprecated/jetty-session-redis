@@ -22,6 +22,11 @@
 
     <display-name>web-2</display-name>
 
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
+        <param-value>/</param-value>
+    </context-param>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

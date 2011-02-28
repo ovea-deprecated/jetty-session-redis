@@ -26,10 +26,7 @@ import redis.clients.jedis.exceptions.JedisException;
 
 import javax.naming.InitialContext;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static java.lang.Long.parseLong;
 
@@ -43,7 +40,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
     private final JedisExecutor jedisExecutor;
     private final Serializer serializer;
 
-    private long saveIntervalSec = 60; //only persist changes to session access times every 60 secs
+    private long saveIntervalSec = 20; //only persist changes to session access times every 20 secs
 
     public RedisSessionManager(JedisPool jedisPool) {
         this(jedisPool, new XStreamSerializer());
@@ -83,11 +80,6 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         saveIntervalSec = sec;
     }
 
-    public long getSaveInterval() {
-        return saveIntervalSec;
-
-    }
-
     @Override
     public void doStart() throws Exception {
         serializer.start();
@@ -105,65 +97,99 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         long now = System.currentTimeMillis();
         RedisSession loaded;
         if (current == null) {
-            Log.debug("No session ", clusterId);
-            loaded = loadSession(clusterId);
-        } else if (now - current.lastSaved >= saveIntervalSec * 1000) {
-            Log.debug("Old session", clusterId);
-            loaded = loadSession(clusterId);
+            Log.debug("[RedisSessionManager] loadSession - No session found in cache, loading id={}", clusterId);
+            loaded = loadFromStore(clusterId, current);
+        } else if (current.requestStarted()) {
+            Log.debug("[RedisSessionManager] loadSession - Existing session found in cache, loading id={}", clusterId);
+            loaded = loadFromStore(clusterId, current);
         } else {
             loaded = current;
         }
         if (loaded == null) {
-            Log.debug("No session in database matching id={}", clusterId);
+            Log.debug("[RedisSessionManager] loadSession - No session found in Redis for id={}", clusterId);
+            if(current != null)
+                current.invalidate();
+        } else if (loaded == current) {
+            Log.debug("[RedisSessionManager] loadSession - No change found in Redis for session id={}", clusterId);
+            return loaded;
         } else if (!loaded.lastNode.equals(getIdManager().getWorkerName()) || current == null) {
             //if the session in the database has not already expired
             if (loaded.expiryTime > now) {
                 //session last used on a different node, or we don't have it in memory
                 loaded.changeLastNode(getIdManager().getWorkerName());
             } else {
-                Log.debug("expired session", clusterId);
+                Log.debug("[RedisSessionManager] loadSession - Loaded session has expired, id={}", clusterId);
                 loaded = null;
             }
         }
         return loaded;
     }
 
-    private RedisSession loadSession(final String clusterId) {
-        Log.debug("Load distributed session with id {}", clusterId);
+    private RedisSession loadFromStore(final String clusterId, final RedisSession current) {
         List<String> redisData = jedisExecutor.execute(new JedisCallback<List<String>>() {
             @Override
             public List<String> execute(Jedis jedis) {
-                return jedis.hmget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, FIELDS);
+                if (current == null) {
+                    return jedis.exists(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId) ?
+                            jedis.hmget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, FIELDS) :
+                            null;
+                } else {
+                    String val = jedis.hget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, "lastSaved");
+                    if (val == null) {
+                        // no session in store
+                        return Collections.emptyList();
+                    }
+                    if (current.lastSaved != Long.parseLong(val)) {
+                        // session has changed - reload
+                        return jedis.hmget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, FIELDS);
+                    } else {
+                        // session dit not changed in cache since last save
+                        return null;
+                    }
+                }
             }
         });
+        if (redisData == null) {
+            // case where session has not been modified
+            return current;
+        }
+        if (redisData.isEmpty() || redisData.get(0) == null) {
+            // no session found in redis (no data)
+            return null;
+        }
         Map<String, String> data = new HashMap<String, String>();
         for (int i = 0; i < FIELDS.length; i++)
             data.put(FIELDS[i], redisData.get(i));
         String attrs = data.get("attributes");
         //noinspection unchecked
-        return data.get("id") == null ? null : new RedisSession(data, attrs == null ? new HashMap<String, Object>() : serializer.deserialize(attrs, Map.class));
+        return new RedisSession(data, attrs == null ? new HashMap<String, Object>() : serializer.deserialize(attrs, Map.class));
     }
 
     @Override
     protected void storeSession(final RedisSession session) {
-        final Map<String, String> toStore = session.redisMap.containsKey("attributes") ?
-                session.redisMap :
-                new TreeMap<String, String>(session.redisMap);
-        if (toStore.containsKey("attributes"))
-            toStore.put("attributes", serializer.serialize(session.getAttributes()));
-        jedisExecutor.execute(new JedisCallback<Object>() {
-            @Override
-            public Object execute(Jedis jedis) {
-                return jedis.multi(new TransactionBlock() {
-                    @Override
-                    public void execute() throws JedisException {
-                        super.hmset(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), toStore);
-                        super.expireAt(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), session.expiryTime / 1000);
-                    }
-                });
-            }
-        });
-        session.saved();
+        if (!session.redisMap.isEmpty()) {
+            final Map<String, String> toStore = session.redisMap.containsKey("attributes") ?
+                    session.redisMap :
+                    new TreeMap<String, String>(session.redisMap);
+            if (toStore.containsKey("attributes"))
+                toStore.put("attributes", serializer.serialize(session.getAttributes()));
+            Log.debug("[RedisSessionManager] storeSession - Storing session id={}", session.getClusterId());
+            jedisExecutor.execute(new JedisCallback<Object>() {
+                @Override
+                public Object execute(Jedis jedis) {
+                    session.lastSaved = System.currentTimeMillis();
+                    toStore.put("lastSaved", "" + session.lastSaved);
+                    return jedis.multi(new TransactionBlock() {
+                        @Override
+                        public void execute() throws JedisException {
+                            super.hmset(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), toStore);
+                            super.expireAt(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), session.expiryTime / 1000);
+                        }
+                    });
+                }
+            });
+            session.redisMap.clear();
+        }
     }
 
     @Override
@@ -173,10 +199,11 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
 
     @Override
     protected void deleteSession(final RedisSession session) {
+        Log.debug("[RedisSessionManager] deleteSession - Deleting from Redis session id={}", session.getClusterId());
         jedisExecutor.execute(new JedisCallback<Object>() {
             @Override
             public Object execute(Jedis jedis) {
-                return jedis.del(session.getClusterId());
+                return jedis.del(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId());
             }
         });
     }
@@ -190,6 +217,12 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         private long expiryTime;
         private long lastSaved;
         private String lastNode;
+        private final ThreadLocal<Boolean> firstAccess = new ThreadLocal<Boolean>() {
+            @Override
+            protected Boolean initialValue() {
+                return true;
+            }
+        };
 
         private RedisSession(HttpServletRequest request) {
             super(request);
@@ -206,7 +239,6 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
             redisMap.put("expiryTime", "" + expiryTime);
             redisMap.put("maxIdle", "" + _maxIdleMs);
             redisMap.put("cookieSet", "" + _cookieSet);
-            redisMap.put("lastSaved", "" + lastSaved);
             redisMap.put("attributes", "");
         }
 
@@ -245,6 +277,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         @Override
         protected void access(long time) {
             super.access(time);
+            firstAccess.remove();
             expiryTime = _maxIdleMs < 0 ? 0 : time + _maxIdleMs;
             // prepare serialization
             redisMap.put("lastAccessed", "" + _lastAccessed);
@@ -269,27 +302,29 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         @Override
         protected void complete() {
             super.complete();
-            try {
-                if (!redisMap.isEmpty()
-                        && (redisMap.size() != 3
-                        || !redisMap.containsKey("lastAccessed")
-                        || !redisMap.containsKey("accessed")
-                        || !redisMap.containsKey("expiryTime")
-                        || _accessed - lastSaved >= getSaveInterval() * 1000)) {
+            if (!redisMap.isEmpty()
+                    && (redisMap.size() != 3
+                    || !redisMap.containsKey("lastAccessed")
+                    || !redisMap.containsKey("accessed")
+                    || !redisMap.containsKey("expiryTime")
+                    || _accessed - lastSaved >= saveIntervalSec * 1000)) {
+                try {
                     willPassivate();
                     storeSession(this);
                     didActivate();
+                } catch (Exception e) {
+                    Log.warn("[RedisSessionManager] complete - Problem persisting changed session data id=" + getId(), e);
+                } finally {
+                    redisMap.clear();
                 }
-            } catch (Exception e) {
-                Log.warn("Problem persisting changed session data id=" + getId(), e);
-            } finally {
-                redisMap.clear();
             }
         }
 
-        public void saved() {
-            lastSaved = System.currentTimeMillis();
-            redisMap.put("lastSaved", "" + lastSaved);
+        public boolean requestStarted() {
+            boolean first = firstAccess.get();
+            if (first)
+                firstAccess.set(false);
+            return first;
         }
     }
 }

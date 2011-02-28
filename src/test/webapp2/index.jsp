@@ -28,7 +28,7 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>web-1</title>
+    <title>web-2</title>
 </head>
 <body>
 

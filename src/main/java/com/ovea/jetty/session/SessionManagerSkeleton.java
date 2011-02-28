@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static java.lang.Math.round;
+
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
@@ -60,30 +62,23 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
     }
 
     @Override
-    public final void removeSession(AbstractSessionManager.Session session, boolean invalidate) {
-        T sessionSkeleton = (T) session;
-        // Remove session from context and global maps
-        boolean removed = false;
+    public final void removeSession(AbstractSessionManager.Session sess, boolean invalidate) {
+        T session = (T) sess;
         String clusterId = getClusterId(session);
-        synchronized (this) {
-            //take this session out of the map of sessions for this context
-            if (getSession(clusterId) != null) {
-                removed = true;
-                removeSession(clusterId);
-            }
-        }
+        boolean removed = removeSession(clusterId);
         if (removed) {
-            // Remove session from all context and global id maps
+            _sessionsStats.decrement();
+            _sessionTimeStats.set(round((System.currentTimeMillis() - session.getCreationTime()) / 1000.0));
             _sessionIdManager.removeSession(session);
             if (invalidate)
-                _sessionIdManager.invalidateAll(clusterId);
+                _sessionIdManager.invalidateAll(session.getClusterId());
             if (invalidate && _sessionListeners != null) {
                 HttpSessionEvent event = new HttpSessionEvent(session);
                 for (int i = LazyList.size(_sessionListeners); i-- > 0;)
                     ((HttpSessionListener) LazyList.get(_sessionListeners, i)).sessionDestroyed(event);
             }
             if (!invalidate) {
-                sessionSkeleton.willPassivate();
+                session.willPassivate();
             }
         }
     }
@@ -144,8 +139,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
         ClassLoader old_loader = Thread.currentThread().getContextClassLoader();
         try {
             for (String expiredClusterId : expired) {
-                if (Log.isDebugEnabled())
-                    Log.debug("Expiring session id " + expiredClusterId);
+                Log.debug("[SessionManagerSkeleton] Expiring session id={}", expiredClusterId);
                 T session = sessions.get(expiredClusterId);
                 if (session != null)
                     session.timeout();

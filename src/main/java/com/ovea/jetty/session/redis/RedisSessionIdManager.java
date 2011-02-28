@@ -32,7 +32,7 @@ import java.util.List;
  */
 public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
 
-    private static final Integer ZERO = 0;
+    private static final Long ZERO = 0L;
     private static final String REDIS_SESSIONS_KEY = "jetty-sessions";
     static final String REDIS_SESSION_KEY = "jetty-session-";
 
@@ -114,7 +114,7 @@ public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
             if (ZERO.equals(status.get(i)))
                 expired.add(clusterIds.get(i));
         if (Log.isDebugEnabled() && !expired.isEmpty())
-            Log.debug("Scavenger found {} sessions to expire: {}", expired.size(), expired);
+            Log.debug("[RedisSessionIdManager] Scavenger found {} sessions to expire: {}", expired.size(), expired);
         return expired;
     }
 

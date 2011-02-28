@@ -84,8 +84,8 @@
             <New class="redis.clients.jedis.JedisPool">
                 <Arg>
                     <New class="org.apache.commons.pool.impl.GenericObjectPool$Config">
-                        <Set type="int" name="minIdle">5</Set>
-                        <Set type="int" name="maxActive">15</Set>
+                        <Set type="int" name="minIdle">3</Set>
+                        <Set type="int" name="maxActive">5</Set>
                         <Set type="boolean" name="testOnBorrow">true</Set>
                     </New>
                 </Arg>
