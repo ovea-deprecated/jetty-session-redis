@@ -154,3 +154,4 @@ Here is the list of provided Serializer:
 
 * Add asynchronous support for save tasks to not slow requests
 * Support save queues for each session to only take newer save requests
+* byte[] serialization and access for Redis (avoid B64, option to keep strings)
