@@ -140,6 +140,16 @@ Here is the list of provided Serializer:
         </New>
     </Set>
 
+## Debugging
+
+If you need to troobleshoot something, you can put Jetty in DEBUG mode and see the traces from RedisSessionManager and RedisSessionIdManager.
+
+Also, with Redis you have the ability to monitor all the calls. Simply issue in a command-line:
+
+    redis-cli monitor
+
+To see all Redis requests going to the Redis server. If you are using a String serializer such as XStream of Json, you'll be able to see all your session attributes into.
+
 ## Authors and help
 
 * <strong>Mathieu Carbou</strong> [mail](mailto:mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
