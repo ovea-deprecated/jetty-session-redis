@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.swing.*;
 import java.io.Serializable;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +44,7 @@ public final class JdkSerializerTest implements Serializable {
         JdkSerializerTest c = round(this);
         assertEquals(2, c.a);
         assertEquals(0, c.b);
-        round(new JFrame());
+        //round(new JFrame());
     }
 
     @Test
@@ -56,7 +55,7 @@ public final class JdkSerializerTest implements Serializable {
         JdkSerializerTest c = round(this);
         assertEquals(2, c.a);
         assertEquals(0, c.b);
-        round(new JFrame());
+        //round(new JFrame());
     }
 
     private <T> T round(T obj) {
