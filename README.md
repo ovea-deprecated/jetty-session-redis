@@ -12,7 +12,11 @@
 
 ## Download
 
-All downloads are [here](https://github.com/Ovea/jetty-session-redis/downloads). They will also be available in Maven central repository and also in Sonatype OSS repositories soon.
+All downloads are [here](https://github.com/Ovea/jetty-session-redis/downloads). They will also be available in Maven central repository and also in Sonatype OSS repositories soon:
+
+* [Snapshots - in Sonatype OSS Repository](https://oss.sonatype.org/content/repositories/snapshots/com/ovea/jetty-session-redis/)
+* [Releases - in Sonatype OSS Repository](https://oss.sonatype.org/content/repositories/releases/com/ovea/jetty-session-redis/)
+* [Releases - in Maven Central Repository](http://repo2.maven.org/maven2/com/ovea/jetty-session-redis/)
 
 See the section below to know which package you need (the jar file or the -all bundle).
 
