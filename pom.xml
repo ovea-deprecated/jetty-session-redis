@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.ovea</groupId>
         <artifactId>ovea</artifactId>
-        <version>1-SNAPSHOT</version>
+        <version>2</version>
     </parent>
 
     <artifactId>jetty-session-redis</artifactId>
