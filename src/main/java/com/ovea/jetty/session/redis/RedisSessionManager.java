@@ -129,19 +129,18 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         List<String> redisData = jedisExecutor.execute(new JedisCallback<List<String>>() {
             @Override
             public List<String> execute(Jedis jedis) {
+                final String key = RedisSessionIdManager.REDIS_SESSION_KEY + clusterId;
                 if (current == null) {
-                    return jedis.exists(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId) ?
-                            jedis.hmget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, FIELDS) :
-                            null;
+                    return jedis.exists(key) ? jedis.hmget(key, FIELDS) : null;
                 } else {
-                    String val = jedis.hget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, "lastSaved");
+                    String val = jedis.hget(key, "lastSaved");
                     if (val == null) {
                         // no session in store
                         return Collections.emptyList();
                     }
                     if (current.lastSaved != Long.parseLong(val)) {
                         // session has changed - reload
-                        return jedis.hmget(RedisSessionIdManager.REDIS_SESSION_KEY + clusterId, FIELDS);
+                        return jedis.hmget(key, FIELDS);
                     } else {
                         // session dit not changed in cache since last save
                         return null;
@@ -182,8 +181,9 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
                     return jedis.multi(new TransactionBlock() {
                         @Override
                         public void execute() throws JedisException {
-                            super.hmset(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), toStore);
-                            super.expireAt(RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId(), session.expiryTime / 1000);
+                            final String key = RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId();
+                            super.hmset(key, toStore);
+                            super.expireAt(key, session.expiryTime / 1000);
                         }
                     });
                 }
