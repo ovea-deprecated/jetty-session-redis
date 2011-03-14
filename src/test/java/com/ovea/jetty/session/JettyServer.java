@@ -15,45 +15,32 @@
  */
 package com.ovea.jetty.session;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.xml.XmlConfiguration;
-
-import java.io.File;
+import org.testatoo.container.Container;
+import org.testatoo.container.ContainerConfiguration;
+import org.testatoo.container.TestatooContainer;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 public final class JettyServer {
 
-    final Server server;
+    final Container container;
 
     public JettyServer(String webappRoot) {
-        try {
-            server = new Server();
-
-            XmlConfiguration configuration = new XmlConfiguration(new File(webappRoot + "/WEB-INF/jetty-server.xml").toURI().toURL());
-            configuration.configure(server);
-
-            HandlerCollection contexts = server.getChildHandlerByClass(ContextHandlerCollection.class);
-            WebAppContext webapp = new WebAppContext(webappRoot, webappRoot);
-            contexts.addHandler(webapp);
-
-            configuration = new XmlConfiguration(new File(webappRoot + "/WEB-INF/jetty-web.xml").toURI().toURL());
-            configuration.configure(webapp);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        container = ContainerConfiguration.create()
+                .webappRoot(webappRoot)
+                .set("jetty.conf", webappRoot + "/WEB-INF/jetty-server.xml")
+                .set("jetty.env", webappRoot + "/WEB-INF/jetty-web.xml")
+                .buildContainer(TestatooContainer.JETTY);
     }
 
     public void start() throws Exception {
-        server.start();
+        if (container != null)
+            container.start();
     }
 
     public void stop() throws Exception {
-        if (server != null)
-            server.stop();
+        if (container != null)
+            container.stop();
     }
 }
