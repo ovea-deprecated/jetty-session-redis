@@ -157,9 +157,3 @@ To see all Redis requests going to the Redis server. If you are using a String s
 ## Authors and help
 
 * <strong>Mathieu Carbou</strong> [mail](mailto:mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
-
-## TODO
-
-* Add asynchronous support for save tasks to not slow requests
-* Support save queues for each session to only take newer save requests
-* byte[] serialization and access for Redis (avoid B64, option to keep strings)
