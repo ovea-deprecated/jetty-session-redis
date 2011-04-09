@@ -7,7 +7,7 @@
 ## Build instruction:
 
     git clone git://github.com/Ovea/jetty-session-redis.git
-    jetty-session-redis
+    cd jetty-session-redis
     mvn package
 
 ## Download
