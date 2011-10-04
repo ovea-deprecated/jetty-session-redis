@@ -40,7 +40,7 @@ public final class XStreamSerializerTest {
         b = 2;
         XStreamSerializerTest c = round(this);
         assertEquals(2, c.a);
-        assertEquals(0, c.b);
+        assertEquals(1, c.b);
         //round(new JFrame());
     }
 
