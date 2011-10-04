@@ -15,13 +15,16 @@
  */
 package com.ovea.jetty.session;
 
+import org.eclipse.jetty.server.session.AbstractSession;
 import org.eclipse.jetty.server.session.AbstractSessionManager;
 import org.eclipse.jetty.util.LazyList;
 import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,17 @@ import static java.lang.Math.round;
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.SessionSkeleton> extends AbstractSessionManager {
+
+    private final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
+    private static final Field _cookieSet;
+    static {
+        try {
+            _cookieSet = AbstractSession.class.getDeclaredField("_cookieSet");
+            _cookieSet.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
     private final ConcurrentMap<String, T> sessions = new ConcurrentHashMap<String, T>();
 
@@ -50,9 +64,9 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
     }
 
     @Override
-    protected final void addSession(AbstractSessionManager.Session session) {
+    protected final void addSession(AbstractSession session) {
         if (isRunning()) {
-            T sessionSkeleton = (T) session;
+            @SuppressWarnings({"unchecked"}) T sessionSkeleton = (T) session;
             String clusterId = getClusterId(session);
             sessions.put(clusterId, sessionSkeleton);
             sessionSkeleton.willPassivate();
@@ -62,8 +76,8 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
     }
 
     @Override
-    public final void removeSession(AbstractSessionManager.Session sess, boolean invalidate) {
-        T session = (T) sess;
+    public final void removeSession(AbstractSession sess, boolean invalidate) {
+        @SuppressWarnings({"unchecked"}) T session = (T) sess;
         String clusterId = getClusterId(session);
         boolean removed = removeSession(clusterId);
         if (removed) {
@@ -91,7 +105,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
                 if (session != null)
                     deleteSession(session);
             } catch (Exception e) {
-                Log.warn("Problem deleting session id=" + clusterId, e);
+                LOG.warn("Problem deleting session id=" + clusterId, e);
             }
             return session != null;
         }
@@ -111,6 +125,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
         }
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     @Deprecated
     public final Map getSessionMap() {
@@ -128,7 +143,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
     }
 
     public final void invalidateSession(String clusterId) {
-        Session session = sessions.get(clusterId);
+        AbstractSession session = sessions.get(clusterId);
         if (session != null)
             session.invalidate();
     }
@@ -139,7 +154,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
         ClassLoader old_loader = Thread.currentThread().getContextClassLoader();
         try {
             for (String expiredClusterId : expired) {
-                Log.debug("[SessionManagerSkeleton] Expiring session id={}", expiredClusterId);
+                LOG.debug("[SessionManagerSkeleton] Expiring session id={}", expiredClusterId);
                 T session = sessions.get(expiredClusterId);
                 if (session != null)
                     session.timeout();
@@ -148,7 +163,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
             if (t instanceof ThreadDeath)
                 throw ((ThreadDeath) t);
             else
-                Log.warn("Problem expiring sessions", t);
+                LOG.warn("Problem expiring sessions", t);
         } finally {
             Thread.currentThread().setContextClassLoader(old_loader);
         }
@@ -183,43 +198,28 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
 
     protected abstract T loadSession(String clusterId, T current);
 
-    public abstract class SessionSkeleton extends AbstractSessionManager.Session {
-
-        private static final long serialVersionUID = -466877123269635865L;
+    public abstract class SessionSkeleton extends AbstractSession {
 
         public SessionSkeleton(HttpServletRequest request) {
-            super(request);
+            super(SessionManagerSkeleton.this, request);
         }
 
         public SessionSkeleton(long created, long accessed, String clusterId) {
-            super(created, accessed, clusterId);
-        }
-
-        @Override
-        public String getClusterId() {
-            return super.getClusterId();
-        }
-
-        @Override
-        public boolean isValid() {
-            return super.isValid();
-        }
-
-        @Override
-        public void willPassivate() {
-            super.willPassivate();
-        }
-
-        @Override
-        public void didActivate() {
-            super.didActivate();
+            super(SessionManagerSkeleton.this, created, accessed, clusterId);
         }
 
         @Override
         public void timeout() throws IllegalStateException {
-            Log.debug("Timing out session id={}", _clusterId);
+            LOG.debug("Timing out session id={}", getClusterId());
             super.timeout();
         }
 
+        protected void setCookieSetTime(long time) {
+            try {
+                _cookieSet.set(this, time);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
     }
 }

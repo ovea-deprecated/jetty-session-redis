@@ -22,6 +22,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.AbstractSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,6 +35,7 @@ import java.util.concurrent.*;
  */
 public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager {
 
+    final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
     // for a session id in the whole jetty, each webapp can have different sessions for the same id
     private final ConcurrentMap<String, Object> sessions = new ConcurrentHashMap<String, Object>();
 
@@ -86,7 +88,7 @@ public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager 
                                 }
                             });
                         } catch (Exception e) {
-                            Log.warn("Scavenger thread failure: " + e.getMessage(), e);
+                            LOG.warn("Scavenger thread failure: " + e.getMessage(), e);
                         }
                     }
                 }

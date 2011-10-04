@@ -18,6 +18,7 @@ package com.ovea.jetty.session.redis;
 import com.ovea.jetty.session.SessionIdManagerSkeleton;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.TransactionBlock;
@@ -31,6 +32,8 @@ import java.util.List;
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
+
+    final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
 
     private static final Long ZERO = 0L;
     private static final String REDIS_SESSIONS_KEY = "jetty-sessions";
@@ -113,8 +116,8 @@ public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
         for (int i = 0; i < status.size(); i++)
             if (ZERO.equals(status.get(i)))
                 expired.add(clusterIds.get(i));
-        if (Log.isDebugEnabled() && !expired.isEmpty())
-            Log.debug("[RedisSessionIdManager] Scavenger found {} sessions to expire: {}", expired.size(), expired);
+        if (LOG.isDebugEnabled() && !expired.isEmpty())
+            LOG.debug("[RedisSessionIdManager] Scavenger found {} sessions to expire: {}", expired.size(), expired);
         return expired;
     }
 
