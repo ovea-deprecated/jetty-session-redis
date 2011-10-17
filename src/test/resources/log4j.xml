@@ -34,6 +34,14 @@
         <priority value="TRACE"/>
     </category>
 
+    <category name="org.eclipse.jetty.server.session">
+        <priority value="TRACE"/>
+    </category>
+
+    <category name="com.ovea.jetty">
+        <priority value="TRACE"/>
+    </category>
+
     <!-- ======================= -->
     <!-- Setup the Root category -->
     <!-- ======================= -->

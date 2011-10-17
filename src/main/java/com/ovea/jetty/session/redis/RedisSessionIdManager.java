@@ -33,7 +33,7 @@ import java.util.List;
  */
 public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
 
-    final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
+    final static Logger LOG = Log.getLogger("com.ovea.jetty.session");
 
     private static final Long ZERO = 0L;
     private static final String REDIS_SESSIONS_KEY = "jetty-sessions";

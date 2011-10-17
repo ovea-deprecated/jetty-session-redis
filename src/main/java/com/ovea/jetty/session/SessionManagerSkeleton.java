@@ -38,7 +38,7 @@ import static java.lang.Math.round;
  */
 public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.SessionSkeleton> extends AbstractSessionManager {
 
-    private final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
+    private final static Logger LOG = Log.getLogger("com.ovea.jetty.session");
     private static final Field _cookieSet;
     static {
         try {

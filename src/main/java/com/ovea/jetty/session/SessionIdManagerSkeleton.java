@@ -35,7 +35,7 @@ import java.util.concurrent.*;
  */
 public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager {
 
-    final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
+    final static Logger LOG = Log.getLogger("com.ovea.jetty.session");
     // for a session id in the whole jetty, each webapp can have different sessions for the same id
     private final ConcurrentMap<String, Object> sessions = new ConcurrentHashMap<String, Object>();
 
@@ -119,17 +119,15 @@ public abstract class SessionIdManagerSkeleton extends AbstractSessionIdManager 
 
     @Override
     public final String getNodeId(String clusterId, HttpServletRequest request) {
-        String worker = request == null ? null : (String) request.getAttribute("org.eclipse.http.ajp.JVMRoute");
-        if (worker != null)
-            return clusterId + '.' + worker;
         if (_workerName != null)
             return clusterId + '.' + _workerName;
         return clusterId;
     }
 
     @Override
-    public final boolean idInUse(String clusterId) {
-        return sessions.containsKey(clusterId) || hasClusterId(clusterId);
+    public final boolean idInUse(String id) {
+        String cid = getClusterId(id);
+        return id != null && (sessions.containsKey(cid) || hasClusterId(cid));
     }
 
     @Override

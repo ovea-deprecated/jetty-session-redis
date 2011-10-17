@@ -37,7 +37,7 @@ import static java.lang.Long.parseLong;
  */
 public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessionManager.RedisSession> {
 
-    final static Logger LOG = Log.getLogger("org.eclipse.jetty.server.session");
+    final static Logger LOG = Log.getLogger("com.ovea.jetty.session");
     private static final String[] FIELDS = {"id", "created", "accessed", "lastNode", "expiryTime", "lastSaved", "lastAccessed", "maxIdle", "cookieSet", "attributes"};
 
     private final JedisExecutor jedisExecutor;

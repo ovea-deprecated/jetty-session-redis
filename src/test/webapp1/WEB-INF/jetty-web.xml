@@ -37,7 +37,7 @@
                     <!-- set the interval in seconds to force session persistence event if it didn't changed. Default to 60 seconds -->
                     <Set name="saveInterval">20</Set>
                     <!-- set the cookie domain -->
-                    <Set name="sessionDomain">127.0.0.1</Set>
+                    <Set name="sessionDomain">localhost</Set>
                     <!-- set the cookie path -->
                     <Set name="sessionPath">/</Set>
                     <!-- set the cookie max age in seconds. Default is -1 (no max age). 1 day = 86400 seconds -->

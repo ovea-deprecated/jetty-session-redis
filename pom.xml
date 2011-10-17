@@ -29,19 +29,38 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-all</artifactId>
+            <version>8.0.2.v20111006</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- jetty classes + runner + jsp stack -->
         <dependency>
             <groupId>org.testatoo.container</groupId>
             <artifactId>testatoo-container-jetty</artifactId>
             <version>1.0.ga</version>
-            <scope>provided</scope>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-2.1-glassfish</artifactId>
+            <version>9.1.1.B60.25.p2</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- serialization in json -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.7.3</version>
+            <version>1.9.0</version>
             <optional>true</optional>
         </dependency>
 
@@ -113,7 +132,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>standard</id>
+                        <id>all</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -134,27 +153,59 @@
                                     <include>trove:trove</include>
                                 </includes>
                             </artifactSet>
-                            <relocations>
-                                <!-- jackson -->
-                                <relocation>
-                                    <pattern>org.codehaus.jackson</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.jackson</shadedPattern>
-                                </relocation>
-                                <!-- xstream -->
-                                <relocation>
-                                    <pattern>com.thoughtworks.xstream</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.xstream</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.xmlpull</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.xpp3</shadedPattern>
-                                </relocation>
-                                <!-- jboss -->
-                                <relocation>
-                                    <pattern>gnu.trove</pattern>
-                                    <shadedPattern>com.ovea.jetty.session.internal.trove</shadedPattern>
-                                </relocation>
-                            </relocations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>serialjson</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedClassifierName>serialjson</shadedClassifierName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <createSourcesJar>true</createSourcesJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.codehaus.jackson:jackson-core-asl</include>
+                                    <include>org.codehaus.jackson:jackson-mapper-asl</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>serialxml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedClassifierName>serialxml</shadedClassifierName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <createSourcesJar>true</createSourcesJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.thoughtworks.xstream:xstream</include>
+                                    <include>xpp3:xpp3_min</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>serialjboss</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedClassifierName>serialjboss</shadedClassifierName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <createSourcesJar>true</createSourcesJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>trove:trove</include>
+                                </includes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>

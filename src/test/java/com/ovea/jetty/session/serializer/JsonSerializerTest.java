@@ -38,28 +38,44 @@ public final class JsonSerializerTest {
     private int a = 1;
     private transient int b = 1;
     private Map<String, Object> attributes = new HashMap<String, Object>();
+    private InetAddress addr;
 
     @Test
     public void test() throws Exception {
+        addr = InetAddress.getLocalHost();
         serializer.start();
 
         a = 2;
         b = 2;
         attributes.put("a", 1);
         attributes.put("b", new String[]{"q", "w", "e", "r", "t", "y"});
-        attributes.put("c", InetAddress.getLocalHost());
+        System.out.println(InetAddress.getLocalHost());
+
+        System.out.println(this);
 
         JsonSerializerTest c = round(this);
+        System.out.println(c);
+
         assertEquals(2, c.a);
         assertEquals(1, c.b);
         assertEquals(1, c.attributes.get("a"));
         assertEquals(Arrays.asList("q", "w", "e", "r", "t", "y"), c.attributes.get("b"));
-        assertTrue(c.attributes.get("c") instanceof Map);
+        assertEquals(c.addr, addr);
     }
 
     private <T> T round(T obj) {
         String data = serializer.serialize(obj);
         System.out.println(data);
         return (T) serializer.deserialize(data, obj.getClass());
+    }
+
+    @Override
+    public String toString() {
+        return "JsonSerializerTest{" +
+            "addr=" + addr +
+            ", a=" + a +
+            ", b=" + b +
+            ", attributes=" + attributes +
+            '}';
     }
 }
