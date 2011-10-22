@@ -154,6 +154,16 @@ Also, with Redis you have the ability to monitor all the calls. Simply issue in 
 
 To see all Redis requests going to the Redis server. If you are using a String serializer such as XStream of Json, you'll be able to see all your session attributes into.
 
+## Versions & Compatibility
+
+The latest release (>= 2.1.ga) must be used with at least these dependencies:
+
+* com.ovea:jetty-session-redis:2.1.ga:serialjson
+* org.eclipse.jetty.aggregate:jetty-all:8.0.2.v20111006
+* org.mortbay.jetty:servlet-api:3.0.20100224
+* redis.clients:jedis:2.0.0
+* commons-pool:commons-pool:1.5.6
+
 ## Authors and help
 
 * <strong>Mathieu Carbou</strong> [mail](mailto:mathieu.carbou@gmail.com) | [blog](http://blog.mycila.com/) | [website](http://www.mycila.com/)
