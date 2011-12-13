@@ -40,6 +40,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
 
     private final static Logger LOG = Log.getLogger("com.ovea.jetty.session");
     private static final Field _cookieSet;
+
     static {
         try {
             _cookieSet = AbstractSession.class.getDeclaredField("_cookieSet");
@@ -88,7 +89,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
                 _sessionIdManager.invalidateAll(session.getClusterId());
             if (invalidate && _sessionListeners != null) {
                 HttpSessionEvent event = new HttpSessionEvent(session);
-                for (int i = LazyList.size(_sessionListeners); i-- > 0;)
+                for (int i = LazyList.size(_sessionListeners); i-- > 0; )
                     ((HttpSessionListener) LazyList.get(_sessionListeners, i)).sessionDestroyed(event);
             }
             if (!invalidate) {
@@ -175,6 +176,14 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
 
     public final void setMaxCookieAge(int seconds) {
         getSessionCookieConfig().setMaxAge(seconds);
+    }
+
+    public void setSessionDomain(String domain) {
+        setDomain(domain);
+    }
+
+    public void setDomain(String domain) {
+        getSessionCookieConfig().setDomain(domain);
     }
 
     protected final String getVirtualHost() {
