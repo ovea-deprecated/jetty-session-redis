@@ -211,6 +211,7 @@ public abstract class SessionManagerSkeleton<T extends SessionManagerSkeleton.Se
 
         public SessionSkeleton(HttpServletRequest request) {
             super(SessionManagerSkeleton.this, request);
+            super.setMaxInactiveInterval(SessionManagerSkeleton.this._dftMaxIdleSecs > 0 ? SessionManagerSkeleton.this._dftMaxIdleSecs : -1);
         }
 
         public SessionSkeleton(long created, long accessed, String clusterId) {

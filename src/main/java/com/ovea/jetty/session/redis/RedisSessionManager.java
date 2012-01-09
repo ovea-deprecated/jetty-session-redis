@@ -117,7 +117,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
             return loaded;
         } else if (!loaded.lastNode.equals(getSessionIdManager().getWorkerName()) || current == null) {
             //if the session in the database has not already expired
-            if (loaded.expiryTime > now) {
+            if (loaded.expiryTime * 1000 > now) {
                 //session last used on a different node, or we don't have it in memory
                 loaded.changeLastNode(getSessionIdManager().getWorkerName());
             } else {
@@ -186,7 +186,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
                         public void execute() throws JedisException {
                             final String key = RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId();
                             super.hmset(key, toStore);
-                            super.expireAt(key, session.expiryTime / 1000);
+                            super.expireAt(key, session.expiryTime);
                         }
                     });
                 }
@@ -228,8 +228,8 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         private RedisSession(HttpServletRequest request) {
             super(request);
             lastNode = getSessionIdManager().getWorkerName();
-            int maxidle = getMaxInactiveInterval() * 1000;
-            expiryTime = maxidle < 0 ? 0 : System.currentTimeMillis() + maxidle;
+            long maxidle = getMaxInactiveInterval();
+            expiryTime = maxidle < 0 ? 0 : System.currentTimeMillis() / 1000 + maxidle;
             // new session so prepare redis map accordingly
             redisMap.put("id", getClusterId());
             redisMap.put("context", getCanonicalizedContext());
@@ -249,7 +249,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
             lastNode = redisData.get("lastNode");
             expiryTime = parseLong(redisData.get("expiryTime"));
             lastSaved = parseLong(redisData.get("lastSaved"));
-            super.setMaxInactiveInterval(parseInt(redisData.get("maxIdle")) / 1000);
+            super.setMaxInactiveInterval(parseInt(redisData.get("maxIdle")));
             setCookieSetTime(parseLong(redisData.get("cookieSet")));
             for (Map.Entry<String, Object> entry : attributes.entrySet()) {
                 super.doPutOrRemove(entry.getKey(), entry.getValue());
@@ -286,8 +286,8 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         protected boolean access(long time) {
             boolean ret = super.access(time);
             firstAccess.remove();
-            int maxidle = getMaxInactiveInterval() * 1000;
-            expiryTime = maxidle < 0 ? 0 : time + maxidle;
+            int maxidle = getMaxInactiveInterval();
+            expiryTime = maxidle < 0 ? 0 : time / 1000 + maxidle;
             // prepare serialization
             redisMap.put("lastAccessed", "" + getLastAccessedTime());
             redisMap.put("accessed", "" + getAccessed());
@@ -299,7 +299,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         public void setMaxInactiveInterval(int secs) {
             super.setMaxInactiveInterval(secs);
             // prepare serialization
-            redisMap.put("maxIdle", "" + (secs * 1000));
+            redisMap.put("maxIdle", "" + secs);
         }
 
         @Override
