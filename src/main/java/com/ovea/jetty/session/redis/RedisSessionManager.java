@@ -186,7 +186,10 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
                         public void execute() throws JedisException {
                             final String key = RedisSessionIdManager.REDIS_SESSION_KEY + session.getClusterId();
                             super.hmset(key, toStore);
-                            super.expireAt(key, session.expiryTime);
+                            int ttl = session.getMaxInactiveInterval();
+                            if (ttl > 0) {
+                                super.expire(key, ttl);
+                            }
                         }
                     });
                 }
@@ -228,8 +231,8 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         private RedisSession(HttpServletRequest request) {
             super(request);
             lastNode = getSessionIdManager().getWorkerName();
-            long maxidle = getMaxInactiveInterval();
-            expiryTime = maxidle < 0 ? 0 : System.currentTimeMillis() / 1000 + maxidle;
+            long ttl = getMaxInactiveInterval();
+            expiryTime = ttl <= 0 ? 0 : System.currentTimeMillis() / 1000 + ttl;
             // new session so prepare redis map accordingly
             redisMap.put("id", getClusterId());
             redisMap.put("context", getCanonicalizedContext());
@@ -239,7 +242,7 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
             redisMap.put("lastAccessed", "" + getLastAccessedTime());
             redisMap.put("accessed", "" + getAccessed());
             redisMap.put("expiryTime", "" + expiryTime);
-            redisMap.put("maxIdle", "" + maxidle);
+            redisMap.put("maxIdle", "" + ttl);
             redisMap.put("cookieSet", "" + getCookieSetTime());
             redisMap.put("attributes", "");
         }
@@ -286,8 +289,8 @@ public final class RedisSessionManager extends SessionManagerSkeleton<RedisSessi
         protected boolean access(long time) {
             boolean ret = super.access(time);
             firstAccess.remove();
-            int maxidle = getMaxInactiveInterval();
-            expiryTime = maxidle < 0 ? 0 : time / 1000 + maxidle;
+            int ttl = getMaxInactiveInterval();
+            expiryTime = ttl <= 0 ? 0 : time / 1000 + ttl;
             // prepare serialization
             redisMap.put("lastAccessed", "" + getLastAccessedTime());
             redisMap.put("accessed", "" + getAccessed());
