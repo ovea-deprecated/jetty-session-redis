@@ -82,7 +82,7 @@ In Jetty server configuration file (i.e. jetty.xml):
 
     </Configure>
 
-In each web application context file using session clustering (i.e. in WEB-INF/jetty-env.xml):
+In each web application context file using session clustering (i.e. in WEB-INF/jetty-web.xml):
 
     <Configure id="webappContext" class="org.eclipse.jetty.webapp.WebAppContext">
 
