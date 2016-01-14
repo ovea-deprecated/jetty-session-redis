@@ -113,11 +113,14 @@ public final class RedisSessionIdManager extends SessionIdManagerSkeleton {
                 });
             }
         });
-        for (int i = 0; i < status.size(); i++)
-            if (ZERO.equals(status.get(i)))
+        for (int i = 0; i < status.size(); i++) {
+            if (status.get(i).equals(false)) {
                 expired.add(clusterIds.get(i));
-        if (LOG.isDebugEnabled() && !expired.isEmpty())
+            }
+        }
+        if (LOG.isDebugEnabled()) {
             LOG.debug("[RedisSessionIdManager] Scavenger found {} sessions to expire: {}", expired.size(), expired);
+        }
         return expired;
     }
 
