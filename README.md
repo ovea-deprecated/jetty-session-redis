@@ -146,7 +146,7 @@ Here is the list of provided Serializer:
 
 ## Debugging
 
-If you need to troobleshoot something, you can put Jetty in DEBUG mode and see the traces from RedisSessionManager and RedisSessionIdManager.
+If you need to troubleshoot something, you can put Jetty in DEBUG mode and see the traces from RedisSessionManager and RedisSessionIdManager.
 
 Also, with Redis you have the ability to monitor all the calls. Simply issue in a command-line:
 
